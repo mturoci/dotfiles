@@ -54,12 +54,10 @@ setup_zsh_config() {
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"
 
-    # Check current shell in /etc/passwd (more reliable than $SHELL)
-    local current_shell="$(getent passwd "$USER" | cut -d: -f7)"
-
-    if [ "$current_shell" != "$zsh_path" ]; then
+    # Check if $SHELL ends with zsh
+    if [[ ! "$SHELL" =~ zsh$ ]]; then
         info "Setting zsh as default shell..."
-        info "Current shell in /etc/passwd: $current_shell"
+        info "Current shell: $SHELL"
         info "Target shell: $zsh_path"
 
         # Ensure zsh is in /etc/shells
@@ -82,12 +80,12 @@ setup_zsh_config() {
         fi
 
         # Verify the change
-        current_shell="$(getent passwd "$USER" | cut -d: -f7)"
-        if [ "$current_shell" = "$zsh_path" ]; then
+        local new_shell="$(getent passwd "$USER" | cut -d: -f7)"
+        if [ "$new_shell" = "$zsh_path" ]; then
             info "✓ Default shell successfully changed to zsh!"
             info "Please log out and log back in for the change to take effect."
         else
-            error "Shell change verification failed. Current shell is still: $current_shell"
+            error "Shell change verification failed. Current shell is still: $new_shell"
             error "Please manually run: sudo chsh -s $zsh_path $USER"
         fi
     else
