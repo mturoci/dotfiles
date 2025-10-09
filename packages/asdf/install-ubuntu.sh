@@ -33,6 +33,7 @@ install_asdf_ubuntu() {
         info "Downloading asdf ${ASDF_VERSION} for ${ASDF_ARCH}..."
         info "URL: $ASDF_URL"
 
+        rm -rf /tmp/asdf.tar.gz
         if ! curl -fsSL "$ASDF_URL" -o /tmp/asdf.tar.gz; then
             error "Failed to download asdf from $ASDF_URL"
             error "Please check your internet connection or try again later"
