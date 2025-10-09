@@ -49,9 +49,20 @@ setup_zsh_config() {
     create_symlink "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 
     # Set zsh as default shell if not already
-    if [ "$SHELL" != "$(which zsh)" ]; then
+    local zsh_path="$(which zsh)"
+    if [ "$SHELL" != "$zsh_path" ]; then
         info "Setting zsh as default shell..."
-        chsh -s "$(which zsh)"
+
+        # Ensure zsh is in /etc/shells
+        if ! grep -q "$zsh_path" /etc/shells; then
+            info "Adding $zsh_path to /etc/shells..."
+            echo "$zsh_path" | sudo tee -a /etc/shells
+        fi
+
+        chsh -s "$zsh_path"
+        info "Default shell changed to zsh. Please log out and log back in for the change to take effect."
+    else
+        info "zsh is already the default shell"
     fi
 
     info "Zsh configuration complete!"
