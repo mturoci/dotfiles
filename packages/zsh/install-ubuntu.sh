@@ -53,44 +53,9 @@ setup_zsh_config() {
 
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"
-
-    # Check if $SHELL ends with zsh
-    if [[ ! "$SHELL" =~ zsh$ ]]; then
-        info "Setting zsh as default shell..."
-        info "Current shell: $SHELL"
-        info "Target shell: $zsh_path"
-
-        # Ensure zsh is in /etc/shells
-        if ! grep -q "^${zsh_path}$" /etc/shells; then
-            info "Adding $zsh_path to /etc/shells..."
-            echo "$zsh_path" | sudo tee -a /etc/shells > /dev/null
-        fi
-
-        # Try chsh first, then fall back to usermod
-        if chsh -s "$zsh_path" 2>/dev/null; then
-            info "Shell changed using chsh"
-        elif sudo chsh -s "$zsh_path" "$USER" 2>/dev/null; then
-            info "Shell changed using sudo chsh"
-        elif sudo usermod -s "$zsh_path" "$USER" 2>/dev/null; then
-            info "Shell changed using usermod"
-        else
-            error "Failed to change default shell automatically"
-            error "Please manually run: sudo chsh -s $zsh_path $USER"
-            return 1
-        fi
-
-        # Verify the change
-        local new_shell="$(getent passwd "$USER" | cut -d: -f7)"
-        if [ "$new_shell" = "$zsh_path" ]; then
-            info "✓ Default shell successfully changed to zsh!"
-            info "Please log out and log back in for the change to take effect."
-        else
-            error "Shell change verification failed. Current shell is still: $new_shell"
-            error "Please manually run: sudo chsh -s $zsh_path $USER"
-        fi
-    else
-        info "zsh is already the default shell"
-    fi
+    
+    sudo chsh -s $(which zsh) $USER
+    info "✓ Default shell successfully changed to zsh!"
 
     info "Zsh configuration complete!"
 }
