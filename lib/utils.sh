@@ -40,6 +40,12 @@ create_symlink() {
     local source=$1
     local target=$2
 
+    # Check if source exists
+    if [ ! -e "$source" ]; then
+        error "Source file does not exist: $source"
+        return 1
+    fi
+
     backup_file "$target"
 
     info "Creating symlink: $target -> $source"
