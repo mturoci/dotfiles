@@ -40,12 +40,6 @@ install_zsh_macos() {
         info "Installing powerlevel10k..."
         brew install powerlevel10k
     fi
-
-    # Install asdf
-    if ! command_exists asdf; then
-        info "Installing asdf..."
-        brew install asdf
-    fi
 }
 
 setup_zsh_config() {

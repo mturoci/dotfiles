@@ -43,46 +43,6 @@ install_zsh_ubuntu() {
         info "Installing powerlevel10k..."
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
     fi
-
-    # Install asdf
-    if ! command_exists asdf; then
-        info "Installing asdf (precompiled binary)..."
-
-        # Determine architecture
-        ARCH=$(uname -m)
-        case "${ARCH}" in
-            x86_64)  ASDF_ARCH="amd64";;
-            aarch64) ASDF_ARCH="arm64";;
-            *)
-                warn "Unsupported architecture: ${ARCH}"
-                warn "Please install asdf manually from https://asdf-vm.com"
-                ;;
-        esac
-
-        if [ -n "$ASDF_ARCH" ]; then
-            ASDF_VERSION="v0.14.1"
-            ASDF_URL="https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf_${ASDF_VERSION}_linux_${ASDF_ARCH}.tar.gz"
-
-            info "Downloading asdf ${ASDF_VERSION} for ${ASDF_ARCH}..."
-            curl -sL "$ASDF_URL" -o /tmp/asdf.tar.gz
-
-            # Extract to ~/.local/bin
-            mkdir -p "$HOME/.local/bin"
-            tar -xzf /tmp/asdf.tar.gz -C "$HOME/.local/bin" bin/asdf
-            mv "$HOME/.local/bin/bin/asdf" "$HOME/.local/bin/asdf"
-            rmdir "$HOME/.local/bin/bin"
-            rm /tmp/asdf.tar.gz
-
-            chmod +x "$HOME/.local/bin/asdf"
-
-            # Verify installation
-            if [ -x "$HOME/.local/bin/asdf" ]; then
-                info "asdf installed successfully to ~/.local/bin/asdf"
-            else
-                error "asdf installation failed"
-            fi
-        fi
-    fi
 }
 
 setup_zsh_config() {
