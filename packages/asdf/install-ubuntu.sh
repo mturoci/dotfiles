@@ -31,13 +31,33 @@ install_asdf_ubuntu() {
         ASDF_URL="https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf_${ASDF_VERSION}_linux_${ASDF_ARCH}.tar.gz"
 
         info "Downloading asdf ${ASDF_VERSION} for ${ASDF_ARCH}..."
-        curl -sL "$ASDF_URL" -o /tmp/asdf.tar.gz
+        info "URL: $ASDF_URL"
+
+        if ! curl -fsSL "$ASDF_URL" -o /tmp/asdf.tar.gz; then
+            error "Failed to download asdf from $ASDF_URL"
+            error "Please check your internet connection or try again later"
+            exit 1
+        fi
+
+        # Verify download
+        if [ ! -f /tmp/asdf.tar.gz ] || [ ! -s /tmp/asdf.tar.gz ]; then
+            error "Downloaded file is missing or empty"
+            exit 1
+        fi
+
+        info "Download complete, extracting..."
 
         # Extract to ~/.local/bin
         mkdir -p "$HOME/.local/bin"
-        tar -xzf /tmp/asdf.tar.gz -C "$HOME/.local/bin" bin/asdf
+
+        if ! tar -xzf /tmp/asdf.tar.gz -C "$HOME/.local/bin" bin/asdf 2>/dev/null; then
+            error "Failed to extract asdf binary"
+            rm -f /tmp/asdf.tar.gz
+            exit 1
+        fi
+
         mv "$HOME/.local/bin/bin/asdf" "$HOME/.local/bin/asdf"
-        rmdir "$HOME/.local/bin/bin"
+        rmdir "$HOME/.local/bin/bin" 2>/dev/null || true
         rm /tmp/asdf.tar.gz
 
         chmod +x "$HOME/.local/bin/asdf"
