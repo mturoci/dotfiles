@@ -92,6 +92,19 @@ install_homebrew() {
     fi
 }
 
+install_essentials() {
+    local install_script="$DOTFILES_DIR/essentials/install-${OS}.sh"
+
+    if [ ! -f "$install_script" ]; then
+        warn "No essentials installer found for $OS (expected: $install_script)"
+        return
+    fi
+
+    info "Installing essential tools..."
+    export SKIP_PACKAGES
+    bash "$install_script"
+}
+
 run_package_installer() {
     local package=$1
     local install_script="$PACKAGES_DIR/$package/install-${OS}.sh"
@@ -127,6 +140,11 @@ main() {
 
     if [ "$SKIP_PACKAGES" = false ] && [ "$OS" = "macos" ]; then
         install_homebrew
+    fi
+
+    # Install essential tools first (gzip, tar, etc.)
+    if [ "$SKIP_PACKAGES" = false ]; then
+        install_essentials
     fi
 
     for package in "${COMPONENTS[@]}"; do
