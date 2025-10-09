@@ -34,6 +34,14 @@ install_essentials_macos() {
         info "gnu-tar already installed"
     fi
 
+    # Install make (GNU make - may already be present via Xcode Command Line Tools)
+    if ! brew list make &>/dev/null; then
+        info "Installing make via Homebrew..."
+        brew install make
+    else
+        info "make already installed"
+    fi
+
     info "Essential tools installed successfully!"
     info "Note: GNU tar is available as 'gtar' command"
     info "Note: GNU gzip is available in PATH with priority over system version"

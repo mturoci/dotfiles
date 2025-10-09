@@ -29,6 +29,14 @@ install_essentials_ubuntu() {
         info "tar already installed"
     fi
 
+    # Check if make is installed
+    if ! command_exists make; then
+        info "Installing make via apt..."
+        apt-get install -y make
+    else
+        info "make already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 
