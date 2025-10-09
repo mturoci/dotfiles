@@ -53,17 +53,43 @@ setup_zsh_config() {
 
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"
-    if [ "$SHELL" != "$zsh_path" ]; then
+
+    # Check current shell in /etc/passwd (more reliable than $SHELL)
+    local current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+
+    if [ "$current_shell" != "$zsh_path" ]; then
         info "Setting zsh as default shell..."
+        info "Current shell in /etc/passwd: $current_shell"
+        info "Target shell: $zsh_path"
 
         # Ensure zsh is in /etc/shells
-        if ! grep -q "$zsh_path" /etc/shells; then
+        if ! grep -q "^${zsh_path}$" /etc/shells; then
             info "Adding $zsh_path to /etc/shells..."
-            echo "$zsh_path" | sudo tee -a /etc/shells
+            echo "$zsh_path" | sudo tee -a /etc/shells > /dev/null
         fi
 
-        chsh -s "$zsh_path"
-        info "Default shell changed to zsh. Please log out and log back in for the change to take effect."
+        # Try chsh first, then fall back to usermod
+        if chsh -s "$zsh_path" 2>/dev/null; then
+            info "Shell changed using chsh"
+        elif sudo chsh -s "$zsh_path" "$USER" 2>/dev/null; then
+            info "Shell changed using sudo chsh"
+        elif sudo usermod -s "$zsh_path" "$USER" 2>/dev/null; then
+            info "Shell changed using usermod"
+        else
+            error "Failed to change default shell automatically"
+            error "Please manually run: sudo chsh -s $zsh_path $USER"
+            return 1
+        fi
+
+        # Verify the change
+        current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+        if [ "$current_shell" = "$zsh_path" ]; then
+            info "✓ Default shell successfully changed to zsh!"
+            info "Please log out and log back in for the change to take effect."
+        else
+            error "Shell change verification failed. Current shell is still: $current_shell"
+            error "Please manually run: sudo chsh -s $zsh_path $USER"
+        fi
     else
         info "zsh is already the default shell"
     fi
