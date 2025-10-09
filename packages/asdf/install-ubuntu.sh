@@ -27,8 +27,8 @@ install_asdf_ubuntu() {
                 ;;
         esac
 
-        ASDF_VERSION="v0.14.1"
-        ASDF_URL="https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf_${ASDF_VERSION}_linux_${ASDF_ARCH}.tar.gz"
+        ASDF_VERSION="v0.18.0"
+        ASDF_URL="https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf-${ASDF_VERSION}-linux-${ASDF_ARCH}.tar.gz"
 
         info "Downloading asdf ${ASDF_VERSION} for ${ASDF_ARCH}..."
         info "URL: $ASDF_URL"
