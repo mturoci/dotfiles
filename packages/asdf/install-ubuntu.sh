@@ -15,7 +15,6 @@ install_asdf_ubuntu() {
     if ! command_exists asdf; then
         info "Installing asdf (precompiled binary)..."
 
-        # Determine architecture
         ARCH=$(uname -m)
         case "${ARCH}" in
             x86_64)  ASDF_ARCH="amd64";;
@@ -40,15 +39,8 @@ install_asdf_ubuntu() {
             exit 1
         fi
 
-        # Verify download
-        if [ ! -f /tmp/asdf.tar.gz ] || [ ! -s /tmp/asdf.tar.gz ]; then
-            error "Downloaded file is missing or empty"
-            exit 1
-        fi
-
         info "Download complete, extracting..."
 
-        # Extract to ~/.local/bin
         mkdir -p "$HOME/.local/bin"
 
         if ! tar -xzf /tmp/asdf.tar.gz -C "$HOME/.local/bin" bin/asdf 2>/dev/null; then
