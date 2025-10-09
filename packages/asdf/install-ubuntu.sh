@@ -43,15 +43,31 @@ install_asdf_ubuntu() {
 
         mkdir -p "$HOME/.local/bin"
 
-        if ! tar -xzf /tmp/asdf.tar.gz -C "$HOME/.local/bin" bin/asdf 2>/dev/null; then
-            error "Failed to extract asdf binary"
+        # Extract to temporary directory first to see the structure
+        TEMP_EXTRACT_DIR=$(mktemp -d)
+        if ! tar -xzf /tmp/asdf.tar.gz -C "$TEMP_EXTRACT_DIR" 2>/dev/null; then
+            error "Failed to extract asdf archive"
             rm -f /tmp/asdf.tar.gz
+            rm -rf "$TEMP_EXTRACT_DIR"
             exit 1
         fi
 
-        mv "$HOME/.local/bin/bin/asdf" "$HOME/.local/bin/asdf"
-        rmdir "$HOME/.local/bin/bin" 2>/dev/null || true
-        rm /tmp/asdf.tar.gz
+        # Find the asdf binary in the extracted files
+        ASDF_BINARY=$(find "$TEMP_EXTRACT_DIR" -name "asdf" -type f | head -n 1)
+
+        if [ -z "$ASDF_BINARY" ]; then
+            error "Could not find asdf binary in extracted archive"
+            rm -f /tmp/asdf.tar.gz
+            rm -rf "$TEMP_EXTRACT_DIR"
+            exit 1
+        fi
+
+        # Move the binary to the final location
+        mv "$ASDF_BINARY" "$HOME/.local/bin/asdf"
+
+        # Cleanup
+        rm -f /tmp/asdf.tar.gz
+        rm -rf "$TEMP_EXTRACT_DIR"
 
         chmod +x "$HOME/.local/bin/asdf"
 
