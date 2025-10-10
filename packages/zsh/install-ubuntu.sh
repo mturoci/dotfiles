@@ -51,17 +51,14 @@ setup_zsh_config() {
     # Create symlink for .zshrc
     create_symlink "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 
-    # Create symlink for powerlevel10k theme
-    create_symlink "$SCRIPT_DIR/powerlevel10k.zsh-theme" "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
+    # Create symlink for p10k configuration
+    create_symlink "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"
-    
+
     sudo chsh -s $(which zsh) $USER
     info "✓ Default shell successfully changed to zsh!"
-
-    create_symlink "$SCRIPT_DIR/powerlevel10k.zsh-theme" "$HOME/.p10k.zsh"
-    info "✓ Powerlevel10k configuration linked!"
     
     info "Zsh configuration complete!"
 }
