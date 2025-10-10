@@ -1,3 +1,39 @@
+-- Setup OSC 52 for clipboard over SSH
+local function setup_clipboard()
+  -- Check if we're in an SSH session
+  local in_ssh = os.getenv("SSH_TTY") ~= nil or os.getenv("SSH_CONNECTION") ~= nil
+
+  if in_ssh then
+    -- Custom OSC 52 implementation for Neovim < 0.10
+    local function copy_osc52(lines)
+      local text = table.concat(lines, '\n')
+      local b64 = vim.fn.system('base64', text):gsub('\n', '')
+      local osc52 = string.format('\027]52;c;%s\007', b64)
+      io.stdout:write(osc52)
+      io.stdout:flush()
+    end
+
+    local function paste_osc52()
+      return vim.fn.getreg('+')
+    end
+
+    -- Use OSC 52 for SSH sessions
+    vim.g.clipboard = {
+      name = 'OSC 52',
+      copy = {
+        ['+'] = copy_osc52,
+        ['*'] = copy_osc52,
+      },
+      paste = {
+        ['+'] = paste_osc52,
+        ['*'] = paste_osc52,
+      },
+    }
+  end
+end
+
+setup_clipboard()
+
 local options = {
   -- autoread       = true,                    --- Automatically read files changed outside of Vim
   clipboard      = "unnamed,unnamedplus",   --- Copy-paste between vim and everything else
