@@ -172,6 +172,7 @@ main() {
         install_asdf_ubuntu
     fi
     install_asdf_plugins
+    install_runtimes
 }
 
 main "$@"
