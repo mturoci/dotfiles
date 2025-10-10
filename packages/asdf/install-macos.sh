@@ -51,12 +51,54 @@ install_asdf_plugins() {
         fi
 
         info "asdf plugins installed successfully!"
-        info "To install a language runtime, run:"
-        info "  asdf install nodejs latest"
-        info "  asdf set --home nodejs latest"
     else
         warn "asdf not found in PATH. Please restart your shell and run this script again."
+        return
     fi
+}
+
+install_runtimes() {
+    info "Checking and installing language runtimes..."
+
+    # Source asdf to make shims available
+    if [ -f "$(brew --prefix asdf)/libexec/asdf.sh" ]; then
+        source "$(brew --prefix asdf)/libexec/asdf.sh"
+    fi
+
+    # Check and install Node.js
+    if ! command_exists node; then
+        info "Node.js not found in PATH. Installing latest version via asdf..."
+        asdf install nodejs latest
+        NODEJS_VERSION=$(asdf list nodejs | tail -n 1 | xargs)
+        asdf set --home nodejs "$NODEJS_VERSION"
+        info "Node.js $NODEJS_VERSION installed and set as global"
+    else
+        info "Node.js already available in PATH"
+    fi
+
+    # Check and install Python
+    if ! command_exists python && ! command_exists python3; then
+        info "Python not found in PATH. Installing latest version via asdf..."
+        asdf install python latest
+        PYTHON_VERSION=$(asdf list python | tail -n 1 | xargs)
+        asdf set --home python "$PYTHON_VERSION"
+        info "Python $PYTHON_VERSION installed and set as global"
+    else
+        info "Python already available in PATH"
+    fi
+
+    # Check and install Go
+    if ! command_exists go; then
+        info "Go not found in PATH. Installing latest version via asdf..."
+        asdf install golang latest
+        GOLANG_VERSION=$(asdf list golang | tail -n 1 | xargs)
+        asdf set --home golang "$GOLANG_VERSION"
+        info "Go $GOLANG_VERSION installed and set as global"
+    else
+        info "Go already available in PATH"
+    fi
+
+    info "Runtime installation complete!"
 }
 
 main() {
@@ -64,6 +106,7 @@ main() {
         install_asdf_macos
     fi
     install_asdf_plugins
+    install_runtimes
 }
 
 main "$@"
