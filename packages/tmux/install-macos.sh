@@ -39,13 +39,11 @@ install_tpm() {
 setup_tmux_config() {
     info "Setting up tmux configuration..."
 
-    # Create tmux directory if it doesn't exist
     mkdir -p "$HOME/.tmux"
 
-    # Create symlink for .tmux.conf
     create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+    create_symlink "$SCRIPT_DIR/start_tmux.sh" "$HOME/start_tmux.sh"
 
-    # Copy right_status.sh script
     cp "$SCRIPT_DIR/right_status.sh" "$HOME/.tmux/right_status.sh"
     chmod +x "$HOME/.tmux/right_status.sh"
 
