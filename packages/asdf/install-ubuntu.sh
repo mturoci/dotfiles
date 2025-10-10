@@ -136,7 +136,7 @@ install_runtimes() {
         info "Node.js not found in PATH. Installing latest version via asdf..."
         asdf install nodejs latest
         NODEJS_VERSION=$(asdf list nodejs | tail -n 1 | xargs)
-        asdf global nodejs "$NODEJS_VERSION"
+        asdf set --home nodejs "$NODEJS_VERSION"
         info "Node.js $NODEJS_VERSION installed and set as global"
     else
         info "Node.js already available in PATH"
@@ -147,7 +147,7 @@ install_runtimes() {
         info "Python not found in PATH. Installing latest version via asdf..."
         asdf install python latest
         PYTHON_VERSION=$(asdf list python | tail -n 1 | xargs)
-        asdf global python "$PYTHON_VERSION"
+        asdf set --home python "$PYTHON_VERSION"
         info "Python $PYTHON_VERSION installed and set as global"
     else
         info "Python already available in PATH"
@@ -158,7 +158,7 @@ install_runtimes() {
         info "Go not found in PATH. Installing latest version via asdf..."
         asdf install golang latest
         GOLANG_VERSION=$(asdf list golang | tail -n 1 | xargs)
-        asdf global golang "$GOLANG_VERSION"
+        asdf set --home golang "$GOLANG_VERSION"
         info "Go $GOLANG_VERSION installed and set as global"
     else
         info "Go already available in PATH"

@@ -53,7 +53,7 @@ install_asdf_plugins() {
         info "asdf plugins installed successfully!"
         info "To install a language runtime, run:"
         info "  asdf install nodejs latest"
-        info "  asdf global nodejs latest"
+        info "  asdf set --home nodejs latest"
     else
         warn "asdf not found in PATH. Please restart your shell and run this script again."
     fi
