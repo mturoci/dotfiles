@@ -52,6 +52,14 @@ install_essentials_macos() {
         info "make already installed"
     fi
 
+    # Install GitHub CLI
+    if ! command_exists gh; then
+        info "Installing GitHub CLI via Homebrew..."
+        brew install gh
+    else
+        info "GitHub CLI already installed"
+    fi
+
     info "Essential tools installed successfully!"
     info "Note: GNU tar is available as 'gtar' command"
     info "Note: GNU gzip is available in PATH with priority over system version"
