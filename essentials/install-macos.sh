@@ -66,6 +66,41 @@ install_essentials_macos() {
         info "zlib already installed"
     fi
 
+    if ! brew list bzip2 &>/dev/null; then
+        info "Installing bzip2 via Homebrew..."
+        brew install bzip2
+    else
+        info "bzip2 already installed"
+    fi
+
+    if ! brew list readline &>/dev/null; then
+        info "Installing readline via Homebrew..."
+        brew install readline
+    else
+        info "readline already installed"
+    fi
+
+    if ! brew list sqlite &>/dev/null; then
+        info "Installing sqlite via Homebrew..."
+        brew install sqlite
+    else
+        info "sqlite already installed"
+    fi
+
+    if ! brew list tcl-tk &>/dev/null; then
+        info "Installing tcl-tk via Homebrew..."
+        brew install tcl-tk
+    else
+        info "tcl-tk already installed"
+    fi
+
+    if ! brew list xz &>/dev/null; then
+        info "Installing xz via Homebrew..."
+        brew install xz
+    else
+        info "xz already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 

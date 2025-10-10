@@ -71,6 +71,41 @@ install_essentials_ubuntu() {
         info "zlib already installed"
     fi
 
+    if ! dpkg -l | grep -q "^ii  libbz2-dev"; then
+        info "Installing bzip2 via apt..."
+        sudo apt-get install -y libbz2-dev
+    else
+        info "bzip2 already installed"
+    fi
+
+    if ! dpkg -l | grep -q "^ii  libreadline-dev"; then
+        info "Installing readline via apt..."
+        sudo apt-get install -y libreadline-dev
+    else
+        info "readline already installed"
+    fi
+
+    if ! dpkg -l | grep -q "^ii  libsqlite3-dev"; then
+        info "Installing sqlite3 via apt..."
+        sudo apt-get install -y libsqlite3-dev
+    else
+        info "sqlite3 already installed"
+    fi
+
+    if ! dpkg -l | grep -q "^ii  tk-dev"; then
+        info "Installing tk via apt..."
+        sudo apt-get install -y tk-dev
+    else
+        info "tk already installed"
+    fi
+
+    if ! dpkg -l | grep -q "^ii  liblzma-dev"; then
+        info "Installing lzma via apt..."
+        sudo apt-get install -y liblzma-dev
+    else
+        info "lzma already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 
