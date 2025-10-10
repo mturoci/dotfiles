@@ -91,6 +91,19 @@ install_ripgrep() {
     sudo apt-get install -y ripgrep
 }
 
+install_xclip() {
+    info "Installing xclip for Ubuntu..."
+
+    if command_exists xclip; then
+        info "xclip already installed"
+        return
+    fi
+
+    info "Installing xclip via apt..."
+    sudo apt-get update
+    sudo apt-get install -y xclip
+}
+
 setup_nvim_config() {
     info "Setting up neovim configuration..."
 
@@ -105,6 +118,7 @@ main() {
         install_nvim
         install_delta
         install_ripgrep
+        install_xclip
     fi
     setup_nvim_config
 }
