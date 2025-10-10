@@ -2,23 +2,19 @@
 
 set -e
 
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source utilities
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_nvim_macos() {
     info "Installing neovim for macOS..."
 
-    # Check if Homebrew is installed
     if ! command_exists brew; then
         error "Homebrew not found. Please install Homebrew first."
         exit 1
     fi
 
-    # Install neovim via Homebrew
     if ! command_exists nvim; then
         info "Installing neovim via Homebrew..."
         brew install neovim@0.9.4
@@ -30,13 +26,11 @@ install_nvim_macos() {
 install_delta_macos() {
     info "Installing delta for macOS..."
 
-    # Check if Homebrew is installed
     if ! command_exists brew; then
         error "Homebrew not found. Please install Homebrew first."
         exit 1
     fi
 
-    # Install delta via Homebrew
     if ! command_exists delta; then
         info "Installing delta via Homebrew..."
         brew install git-delta
@@ -48,13 +42,11 @@ install_delta_macos() {
 install_ripgrep_macos() {
     info "Installing ripgrep for macOS..."
 
-    # Check if Homebrew is installed
     if ! command_exists brew; then
         error "Homebrew not found. Please install Homebrew first."
         exit 1
     fi
 
-    # Install ripgrep via Homebrew
     if ! command_exists rg; then
         info "Installing ripgrep via Homebrew..."
         brew install ripgrep
@@ -66,10 +58,7 @@ install_ripgrep_macos() {
 setup_nvim_config() {
     info "Setting up neovim configuration..."
 
-    # Create .config directory if it doesn't exist
     mkdir -p "$HOME/.config"
-
-    # Create symlink for nvim config directory
     create_symlink "$SCRIPT_DIR" "$HOME/.config/nvim"
 
     info "Neovim configuration complete!"

@@ -2,11 +2,9 @@
 
 set -e
 
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source utilities
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_nvim() {
@@ -17,7 +15,6 @@ install_nvim() {
         return
     fi
 
-    # Install neovim from official release tarball
     NVIM_VERSION="0.9.4"
     NVIM_TARBALL="nvim-linux64.tar.gz"
     NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/${NVIM_TARBALL}"
@@ -54,7 +51,6 @@ install_delta() {
         return
     fi
 
-    # Get latest release version
     DELTA_VERSION="0.16.5"
     DELTA_ARCH="x86_64-unknown-linux-gnu"
     DELTA_PACKAGE="git-delta_${DELTA_VERSION}_amd64.deb"
@@ -76,7 +72,6 @@ install_delta() {
     info "Installing delta via dpkg..."
     sudo dpkg -i "$DELTA_PACKAGE"
 
-    # Clean up
     cd -
     rm -rf "$TMP_DIR"
 
@@ -91,7 +86,6 @@ install_ripgrep() {
         return
     fi
 
-    # Install ripgrep via apt
     info "Installing ripgrep via apt..."
     sudo apt-get update
     sudo apt-get install -y ripgrep
@@ -100,10 +94,7 @@ install_ripgrep() {
 setup_nvim_config() {
     info "Setting up neovim configuration..."
 
-    # Create .config directory if it doesn't exist
     mkdir -p "$HOME/.config"
-
-    # Create symlink for nvim config directory
     create_symlink "$SCRIPT_DIR" "$HOME/.config/nvim"
 
     info "Neovim configuration complete!"
