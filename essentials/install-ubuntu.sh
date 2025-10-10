@@ -12,10 +12,19 @@ source "$DOTFILES_DIR/lib/utils.sh"
 install_essentials_ubuntu() {
     info "Installing essential tools for Ubuntu..."
 
+    # Install build-essential package (includes gcc, g++, make, and other build tools)
+    if ! dpkg -l | grep -q "^ii  build-essential"; then
+        info "Installing build-essential via apt..."
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+    else
+        info "build-essential already installed"
+    fi
+
     # Check if gzip is installed
     if ! command_exists gzip; then
         info "Installing gzip via apt..."
-        apt-get install -y gzip
+        sudo apt-get install -y gzip
     else
         info "gzip already installed"
     fi
@@ -23,17 +32,9 @@ install_essentials_ubuntu() {
     # Check if tar is installed
     if ! command_exists tar; then
         info "Installing tar via apt..."
-        apt-get install -y tar
+        sudo apt-get install -y tar
     else
         info "tar already installed"
-    fi
-
-    # Check if make is installed
-    if ! command_exists make; then
-        info "Installing make via apt..."
-        apt-get install -y make
-    else
-        info "make already installed"
     fi
 
     info "Essential tools installed successfully!"

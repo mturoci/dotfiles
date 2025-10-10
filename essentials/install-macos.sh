@@ -18,6 +18,16 @@ install_essentials_macos() {
         exit 1
     fi
 
+    # Check if Xcode Command Line Tools are installed
+    if ! xcode-select -p &>/dev/null; then
+        info "Installing Xcode Command Line Tools..."
+        xcode-select --install
+        info "Please complete the Xcode Command Line Tools installation and re-run this script"
+        exit 0
+    else
+        info "Xcode Command Line Tools already installed"
+    fi
+
     # Install gzip (GNU version with better features than macOS default)
     if ! brew list gzip &>/dev/null; then
         info "Installing gzip via Homebrew..."
