@@ -45,6 +45,24 @@ install_delta_macos() {
     fi
 }
 
+install_ripgrep_macos() {
+    info "Installing ripgrep for macOS..."
+
+    # Check if Homebrew is installed
+    if ! command_exists brew; then
+        error "Homebrew not found. Please install Homebrew first."
+        exit 1
+    fi
+
+    # Install ripgrep via Homebrew
+    if ! command_exists rg; then
+        info "Installing ripgrep via Homebrew..."
+        brew install ripgrep
+    else
+        info "ripgrep already installed"
+    fi
+}
+
 setup_nvim_config() {
     info "Setting up neovim configuration..."
 
@@ -61,6 +79,7 @@ main() {
     if [ "$SKIP_PACKAGES" != "true" ]; then
         install_nvim_macos
         install_delta_macos
+        install_ripgrep_macos
     fi
     setup_nvim_config
 }

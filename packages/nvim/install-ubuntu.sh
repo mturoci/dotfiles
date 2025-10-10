@@ -83,6 +83,20 @@ install_delta() {
     info "delta installation complete!"
 }
 
+install_ripgrep() {
+    info "Installing ripgrep for Ubuntu..."
+
+    if command_exists rg; then
+        info "ripgrep already installed"
+        return
+    fi
+
+    # Install ripgrep via apt
+    info "Installing ripgrep via apt..."
+    sudo apt-get update
+    sudo apt-get install -y ripgrep
+}
+
 setup_nvim_config() {
     info "Setting up neovim configuration..."
 
@@ -99,6 +113,7 @@ main() {
     if [ "$SKIP_PACKAGES" != "true" ]; then
         install_nvim
         install_delta
+        install_ripgrep
     fi
     setup_nvim_config
 }
