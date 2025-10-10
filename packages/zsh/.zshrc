@@ -75,6 +75,7 @@ export PATH=$PATH:$HOME/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+export PATH="$HOME/.local/share/nvim-linux64/bin:$PATH"
 
 # Powerlevel10k theme
 source "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
