@@ -60,9 +60,19 @@ install_essentials_macos() {
         info "GitHub CLI already installed"
     fi
 
+    # Install LLVM (includes clang)
+    if ! brew list llvm &>/dev/null; then
+        info "Installing LLVM (includes clang) via Homebrew..."
+        brew install llvm
+    else
+        info "LLVM already installed"
+    fi
+
     info "Essential tools installed successfully!"
     info "Note: GNU tar is available as 'gtar' command"
     info "Note: GNU gzip is available in PATH with priority over system version"
+    info "Note: Xcode Command Line Tools include Apple clang"
+    info "Note: LLVM clang is available at /opt/homebrew/opt/llvm/bin/clang"
 }
 
 setup_git_config() {

@@ -68,6 +68,14 @@ install_essentials_ubuntu() {
         info "GitHub CLI already installed"
     fi
 
+    # Install clang
+    if ! command_exists clang; then
+        info "Installing clang via apt..."
+        sudo apt-get install -y clang
+    else
+        info "clang already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 
