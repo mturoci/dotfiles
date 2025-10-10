@@ -11,7 +11,6 @@ source "$DOTFILES_DIR/lib/utils.sh"
 
 install_essentials_ubuntu() {
     info "Installing essential tools for Ubuntu..."
-    apt-get update
 
     # Check if gzip is installed
     if ! command_exists gzip; then

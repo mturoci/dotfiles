@@ -1,3 +1,4 @@
 .PHONY: install
 install:
-	sudo --preserve-env=HOME ./install.sh
+	sudo apt-get update
+	./install.sh
