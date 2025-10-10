@@ -57,10 +57,33 @@ install_essentials_macos() {
     info "Note: GNU gzip is available in PATH with priority over system version"
 }
 
+setup_git_config() {
+    info "Setting up git configuration..."
+
+    # Set git user name
+    if ! git config --global user.name &>/dev/null; then
+        info "Setting git user.name to: Martin Turoci"
+        git config --global user.name "Martin Turoci"
+    else
+        info "git user.name already configured: $(git config --global user.name)"
+    fi
+
+    # Set git user email
+    if ! git config --global user.email &>/dev/null; then
+        info "Setting git user.email to: you@example.com"
+        git config --global user.email "you@example.com"
+    else
+        info "git user.email already configured: $(git config --global user.email)"
+    fi
+
+    info "Git configuration complete!"
+}
+
 main() {
     if [ "$SKIP_PACKAGES" != "true" ]; then
         install_essentials_macos
     fi
+    setup_git_config
 }
 
 main "$@"
