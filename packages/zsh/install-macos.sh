@@ -36,9 +36,9 @@ install_zsh_macos() {
     fi
 
     # Install powerlevel10k
-    if ! brew list powerlevel10k &>/dev/null; then
+    if [ ! -d "$HOME/powerlevel10k" ]; then
         info "Installing powerlevel10k..."
-        brew install powerlevel10k
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/powerlevel10k
     fi
 }
 
@@ -47,6 +47,9 @@ setup_zsh_config() {
 
     # Create symlink for .zshrc
     create_symlink "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+
+    # Create symlink for powerlevel10k theme
+    create_symlink "$SCRIPT_DIR/powerlevel10k.zsh-theme" "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
 
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"

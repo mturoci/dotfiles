@@ -39,9 +39,9 @@ install_zsh_ubuntu() {
     fi
 
     # Install powerlevel10k
-    if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+    if [ ! -d "$HOME/powerlevel10k" ]; then
         info "Installing powerlevel10k..."
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/powerlevel10k
     fi
 }
 
@@ -51,12 +51,18 @@ setup_zsh_config() {
     # Create symlink for .zshrc
     create_symlink "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 
+    # Create symlink for powerlevel10k theme
+    create_symlink "$SCRIPT_DIR/powerlevel10k.zsh-theme" "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
+
     # Set zsh as default shell if not already
     local zsh_path="$(which zsh)"
     
     sudo chsh -s $(which zsh) $USER
     info "✓ Default shell successfully changed to zsh!"
 
+    create_symlink "$SCRIPT_DIR/powerlevel10k.zsh-theme" "$HOME/.p10k.zsh"
+    info "✓ Powerlevel10k configuration linked!"
+    
     info "Zsh configuration complete!"
 }
 
@@ -65,6 +71,7 @@ main() {
         install_zsh_ubuntu
     fi
     setup_zsh_config
+    source "$HOME/.zshrc"
 }
 
 main "$@"
