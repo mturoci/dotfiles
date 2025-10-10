@@ -1,0 +1,12 @@
+return {
+    _all = {
+        lua = './test/nvim-shim.sh',
+        lpath = "lua/?.lua",
+    },
+    unit = {
+        ROOT = {'./test/unit/'},
+    },
+    e2e = {
+        ROOT = {'./test/e2e/'},
+    },
+}
