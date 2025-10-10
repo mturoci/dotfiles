@@ -70,17 +70,11 @@ alias python3="python"
 alias gemini=/opt/homebrew/Cellar/gemini-cli/0.1.18/bin/gemini
 
 # Additional PATH exports
-export PATH="/usr/local/opt/go@1.13/bin:$PATH"
 export PATH="/usr/local/opt/protobuf@3.6/bin:$PATH"
-export PATH=$PATH:$HOME/go/bin:/usr/local/go/bin
 export PATH=$PATH:$HOME/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-
-# NVM configuration
-export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # Powerlevel10k theme
 source "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
@@ -90,3 +84,4 @@ source "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
 
 # ASDF version manager
 # . "$HOME/.asdf/asdf.sh"
+#
