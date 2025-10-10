@@ -15,7 +15,7 @@ install_nvim() {
         return
     fi
 
-    NVIM_VERSION="0.9.4"
+    NVIM_VERSION="0.10.3"
     NVIM_TARBALL="nvim-linux64.tar.gz"
     NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/${NVIM_TARBALL}"
     INSTALL_DIR="$HOME/.local/share"
