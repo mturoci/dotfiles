@@ -64,6 +64,13 @@ install_essentials_ubuntu() {
         info "clang already installed"
     fi
 
+    if ! dpkg -l | grep -q "^ii  zlib1g-dev"; then
+        info "Installing zlib via apt..."
+        sudo apt-get install -y zlib1g-dev
+    else
+        info "zlib already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 

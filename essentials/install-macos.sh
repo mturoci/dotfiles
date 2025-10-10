@@ -59,6 +59,13 @@ install_essentials_macos() {
         info "LLVM already installed"
     fi
 
+    if ! brew list zlib &>/dev/null; then
+        info "Installing zlib via Homebrew..."
+        brew install zlib
+    else
+        info "zlib already installed"
+    fi
+
     info "Essential tools installed successfully!"
 }
 
