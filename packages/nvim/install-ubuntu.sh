@@ -14,7 +14,7 @@ install_nvim() {
 
     if ! command_exists nvim; then
         info "Installing neovim via apt..."
-        apt-get install -y neovim=0.9.4
+        sudo apt-get install -y neovim=0.9.4
     else
         info "neovim already installed"
     fi
