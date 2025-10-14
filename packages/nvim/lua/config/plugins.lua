@@ -22,9 +22,11 @@ return {
   },
   {
     'mfussenegger/nvim-dap',
-    config = require("config.debug").setup_debug,
     dependencies = {
-      { 'mxsdev/nvim-dap-vscode-js' },
+      {
+        'mxsdev/nvim-dap-vscode-js',
+        config = require("config.debug").setup_debug,
+      },
       {
         "nvim-telescope/telescope-dap.nvim",
         config = function() require("telescope").load_extension("dap") end
