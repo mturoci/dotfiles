@@ -5,6 +5,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Source .env file if it exists
+[[ -f ~/.env ]] && source ~/.env
+
 # PATH configuration
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin:/usr/local/anaconda3/bin:/opt/homebrew/bin

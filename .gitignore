@@ -17,3 +17,6 @@ Thumbs.db
 # Personal notes
 notes.md
 TODO.md
+
+# Environment variables
+.env
