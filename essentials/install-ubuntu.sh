@@ -113,32 +113,6 @@ install_essentials_ubuntu() {
         info "lzma already installed"
     fi
 
-    if ! command_exists luarocks; then
-        info "Installing luarocks from source..."
-
-        if ! command_exists wget; then
-            sudo apt-get update
-            sudo apt-get install -y wget
-        fi
-
-        LUAROCKS_VERSION="3.12.2"
-        TEMP_DIR=$(mktemp -d)
-        cd "$TEMP_DIR"
-
-        wget "https://luarocks.org/releases/luarocks-${LUAROCKS_VERSION}.tar.gz"
-        tar zxpf "luarocks-${LUAROCKS_VERSION}.tar.gz"
-        cd "luarocks-${LUAROCKS_VERSION}"
-
-        ./configure && make && sudo make install
-
-        cd ~
-        rm -rf "$TEMP_DIR"
-
-        info "luarocks installed successfully"
-    else
-        info "luarocks already installed"
-    fi
-
     info "Essential tools installed successfully!"
 }
 
