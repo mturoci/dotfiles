@@ -19,6 +19,11 @@ require("config.statusline")
 require("config.keymaps")
 require("config.conflicts")
 
+
+-- Race condition on ssh connections. For some reason, this needs to be after OSC52 has completed registration, not before.
+local utils           = require 'config.utils'
+utils.setTimeout(500, function() vim.opt.clipboard = "unnamed,unnamedplus" end)
+
 -- Reload all open buffers even when changed externally.
 vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
   pattern = '*',
