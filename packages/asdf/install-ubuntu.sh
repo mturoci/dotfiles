@@ -111,6 +111,12 @@ install_asdf_plugins() {
             asdf plugin add golang
         fi
 
+        # Install Lua plugin
+        if ! asdf plugin list | grep -q lua; then
+            info "Adding Lua plugin..."
+            asdf plugin add lua https://github.com/Stratus3D/asdf-lua.git
+        fi
+
         info "asdf plugins installed successfully!"
     else
         warn "asdf not found in PATH. Please restart your shell and run this script again."
@@ -162,6 +168,16 @@ install_runtimes() {
         info "Go $GOLANG_VERSION installed and set as global"
     else
         info "Go already available in PATH"
+    fi
+
+    # Check and install Lua 5.1.5
+    if ! command_exists lua || ! lua -v 2>&1 | grep -q "5.1.5"; then
+        info "Lua 5.1.5 not found. Installing via asdf..."
+        asdf install lua 5.1.5
+        asdf set --home lua 5.1.5
+        info "Lua 5.1.5 installed and set as global"
+    else
+        info "Lua 5.1.5 already available"
     fi
 
     info "Runtime installation complete!"
