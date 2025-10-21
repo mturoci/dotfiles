@@ -5,6 +5,7 @@ local M = {}
 M.setup_debug = utils.async(function()
   require("dap-vscode-js").setup({
     debugger_path = vim.fn.stdpath('data') .. "/lazy/vscode-js-debug",
+    ensure_installed = { 'delve' },
     adapters = { 'chrome', 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost', 'node', 'chrome' },
   })
   local js_based_languages = { "typescript", "javascript", "typescriptreact" }
@@ -51,6 +52,30 @@ M.setup_debug = utils.async(function()
       }
     }
   end
+
+  dap.configurations["go"] = {
+    {
+      type = "delve",
+      name = "Debug",
+      request = "launch",
+      program = "${file}",
+    },
+    {
+      type = "delve",
+      name = "Debug test", -- configuration for debugging test files
+      request = "launch",
+      mode = "test",
+      program = "${file}",
+    },
+    -- works with go.mod packages and sub packages
+    {
+      type = "delve",
+      name = "Debug test (go.mod)",
+      request = "launch",
+      mode = "test",
+      program = "./${relativeFileDirname}",
+    },
+  }
 
   local launch_json, err = utils.read_file(vim.fn.getcwd() .. "/.vscode/launch.json")
   if err or launch_json == nil then return end
