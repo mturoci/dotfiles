@@ -38,6 +38,13 @@ install_essentials_macos() {
         info "gnu-tar already installed"
     fi
 
+    if ! brew list unzip &>/dev/null; then
+        info "Installing unzip via Homebrew..."
+        brew install unzip
+    else
+        info "unzip already installed"
+    fi
+
     if ! brew list make &>/dev/null; then
         info "Installing make via Homebrew..."
         brew install make

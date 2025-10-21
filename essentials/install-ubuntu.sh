@@ -32,6 +32,13 @@ install_essentials_ubuntu() {
         info "tar already installed"
     fi
 
+    if ! command_exists unzip; then
+        info "Installing unzip via apt..."
+        sudo apt-get install -y unzip
+    else
+        info "unzip already installed"
+    fi
+
     if ! command_exists gh; then
         info "Installing GitHub CLI..."
 
