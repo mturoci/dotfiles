@@ -12,7 +12,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("config.options")
-require("lazy").setup("config.plugins")
+require("lazy").setup("config.plugins", { rocks = { enabled = false } }) --  https://github.com/natecraddock/telescope-zf-native.nvim/issues/21
 require("config.lsp")
 require("config.appearance")
 require("config.statusline")
@@ -21,7 +21,7 @@ require("config.conflicts")
 
 
 -- Race condition on ssh connections. For some reason, this needs to be after OSC52 has completed registration, not before.
-local utils           = require 'config.utils'
+local utils = require 'config.utils'
 utils.setTimeout(500, function() vim.opt.clipboard = "unnamed,unnamedplus" end)
 
 -- Reload all open buffers even when changed externally.
