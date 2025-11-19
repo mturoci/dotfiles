@@ -38,7 +38,7 @@ function SubmitRenamePopup(win_id)
   if not client then return end
 
   local method = "textDocument/rename"
-  local params = vim.lsp.util.make_position_params()
+  local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
   params.newName = val[1]
 
   local res = client.request_sync(method, params, 1000)
@@ -155,7 +155,8 @@ function M.rename()
 end
 
 function M.go_to_usages()
-  local params = vim.lsp.util.make_position_params()
+  local client = vim.lsp.get_clients({ bufnr = 0 })[1]
+  local params = vim.lsp.util.make_position_params(0, client and client.offset_encoding or 'utf-16')
   params.context = { includeDeclaration = false }
 
   vim.lsp.buf_request_all(0, 'textDocument/references', params, function(result)

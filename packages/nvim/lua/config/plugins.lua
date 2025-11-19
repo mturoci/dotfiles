@@ -78,15 +78,15 @@ return {
   },
   {
     'RRethy/vim-illuminate',
+    branch = 'master',
+    commit = '5eeb7951fc630682c322e88a9bbdae5c224ff0aa',
     config = function()
       require("illuminate").configure {}
 
-      -- change the highlight style
       vim.api.nvim_set_hl(0, "IlluminatedWordText", { link = "Visual" })
       vim.api.nvim_set_hl(0, "IlluminatedWordRead", { link = "Visual" })
       vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "Visual" })
 
-      --- auto update the highlight style on colorscheme change
       vim.api.nvim_create_autocmd({ "ColorScheme" }, {
         pattern = { "*" },
         callback = function()
@@ -164,7 +164,7 @@ return {
   },
   {
     'nvim-telescope/telescope.nvim',
-    tag = '0.1.5',
+    branch = 'master',
     dependencies = { 'nvim-lua/plenary.nvim' },
     lazy = false,
     config = function()
@@ -242,7 +242,6 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "main",
     build = ":TSUpdate",
     config = function()
       local configs = require("nvim-treesitter.configs")

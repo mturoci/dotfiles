@@ -159,7 +159,7 @@ local function str_count(...)
 end
 
 local function get_attached_lsp_client(predicate)
-  local clients = vim.lsp.get_active_clients()
+  local clients = vim.lsp.get_clients()
 
   for _, c in pairs(clients) do
     if predicate(c) then return c end
