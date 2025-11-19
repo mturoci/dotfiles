@@ -1,5 +1,7 @@
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+vim.diagnostic.config({ virtual_text = true, })
+
 require("mason").setup()
 require("mason-lspconfig").setup({
   ensure_installed = { "lua_ls", "ts_ls", "gopls", "pyright" },
