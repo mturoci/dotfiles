@@ -55,7 +55,7 @@ local globals = {
   skip_ts_context_commentstring_module = true --skip backwards compatibility routines and speed up loading.
 }
 
--- vim.opt.shortmess:append('c');
+vim.opt.shortmess:append('F')
 -- vim.opt.formatoptions:remove('c');
 -- vim.opt.formatoptions:remove('r');
 -- vim.opt.formatoptions:remove('o');
