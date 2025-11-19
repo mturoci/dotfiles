@@ -67,6 +67,14 @@ return {
   },
   { 'williamboman/mason-lspconfig.nvim' },
   { 'neovim/nvim-lspconfig' },
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    opts = {},
+    config = function()
+      require("typescript-tools").setup()
+    end
+  },
   { 'nvim-tree/nvim-web-devicons' },
   { 'github/copilot.vim' },
   { 'tpope/vim-abolish' },
