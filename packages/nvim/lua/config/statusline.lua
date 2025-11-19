@@ -144,9 +144,16 @@ local function set_statusline(left, top_center, center, right, top_center_len, r
   utils.spawn("tmux", { "set-option", "-g", "status-right", top_center })
 end
 
+vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
+
 for _, highlight in ipairs(HIGHLIGHTS) do
-  vim.cmd(table.concat({ "highlight Statusline", highlight.name, " guibg=", highlight.guibg, " guifg=", highlight.guifg }))
+  vim.api.nvim_set_hl(0, "Statusline" .. highlight.name, {
+    bg = highlight.guibg == "NONE" and "NONE" or highlight.guibg,
+    fg = highlight.guifg
+  })
 end
+
+vim.opt.fillchars:append({ stl = ' ', stlnc = ' ' })
 
 local dir = path:new(vim.loop.cwd())
 local git_dir = ""
