@@ -305,13 +305,13 @@ return {
           { name = "nvim_lsp" },
           { name = "path" }, -- file system paths
         }),
-        -- configure lspkind for vs-code like pictograms in completion menu
         formatting = {
-          format = lspkind.cmp_format({
-            mode = "symbol",
-            maxwidth = 150,
-            ellipsis_char = "...",
-          }),
+          fields = { "abbr", "kind" },
+          format = function(entry, vim_item)
+            vim_item.kind = lspkind.presets.default[vim_item.kind]
+            vim_item.menu = nil
+            return vim_item
+          end
         },
       })
     end,
