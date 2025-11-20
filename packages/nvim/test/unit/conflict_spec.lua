@@ -207,6 +207,37 @@ This is some text from their branch.
     } }
     eq(expectedConflict, expected_conflicts)
   end)
+
+  it('should parse adjacent conflicts with zero lines between them', function()
+    local expected_conflicts = parse([[
+<<<<<<< HEAD
+Ours conflict 1.
+=======
+Theirs conflict 1.
+>>>>>>> another-branch
+<<<<<<< HEAD
+Ours conflict 2.
+=======
+Theirs conflict 2.
+>>>>>>> another-branch
+]])
+    local expectedConflicts = { {
+      from = 1,
+      original_from = 1,
+      original_to = 5,
+      to = 1,
+      ours = { len = 1 },
+      theirs = { len = 1 }
+    }, {
+      from = 2,
+      original_from = 6,
+      original_to = 10,
+      to = 2,
+      ours = { len = 1 },
+      theirs = { len = 1 }
+    } }
+    eq(expectedConflicts, expected_conflicts)
+  end)
 end)
 
 describe('File content generator #content', function()
