@@ -56,6 +56,7 @@ local highlights = {
   ErrorMsg                                 = { fg = colors.err },
   Exception                                = { fg = colors.green },
   FloatBorder                              = { fg = colors.primary },
+  Function                                 = { fg = colors.primary },
   Identifier                               = { fg = colors.text },
   Keyword                                  = { fg = colors.green },
   LineNr                                   = { fg = colors.gray },
