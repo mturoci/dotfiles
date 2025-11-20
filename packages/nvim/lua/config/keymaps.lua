@@ -27,7 +27,6 @@ keymap("n", "<C-h>", "<C-w>h", silent)
 keymap("n", "<C-j>", "<C-w>j", silent)
 keymap("n", "<C-k>", "<C-w>k", silent)
 keymap("n", "<C-l>", "<C-w>l", silent)
-keymap("n", "<C-w>", "<C-w>w", silent) -- TODO: Remap to leader + w instead of CTRL + w
 
 -- Git.
 keymap('n', '<leader>ga', silent_shell('git add .'), {})
