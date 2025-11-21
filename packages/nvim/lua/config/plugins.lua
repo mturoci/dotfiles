@@ -244,7 +244,10 @@ return {
         },
         view_options = {
           show_hidden = true,
-        }
+        },
+        confirmation = {
+          border = "rounded",
+        },
       })
     end
   },
@@ -294,6 +297,10 @@ return {
 
       cmp.setup({
         completion = { completeopt = "menu,menuone,preview", },
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
         snippet = { -- configure how nvim-cmp interacts with snippet engine
           expand = function(args)
             luasnip.lsp_expand(args.body)

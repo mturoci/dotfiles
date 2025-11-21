@@ -63,7 +63,7 @@ local highlights = {
   MatchParen                               = { fg = colors.primary },
   NonText                                  = { fg = colors.gray },
   Normal                                   = { bg = colors.none, fg = colors.text },
-  NormalFloat                              = { bg = colors.background_light },
+  NormalFloat                              = { bg = colors.none },
   NvimTernary                              = { fg = colors.text },
   PMenu                                    = { bg = colors.background_light },
   PMenuSel                                 = { bg = colors.dark_primary },

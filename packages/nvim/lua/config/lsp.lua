@@ -1,6 +1,19 @@
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-vim.diagnostic.config({ virtual_text = true, })
+vim.diagnostic.config({
+  virtual_text = true,
+  float = { border = "rounded" }
+})
+
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+  vim.lsp.handlers.hover,
+  { border = "rounded" }
+)
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+  vim.lsp.handlers.signature_help,
+  { border = "rounded" }
+)
 
 require("mason").setup()
 require("mason-lspconfig").setup({
