@@ -5,11 +5,15 @@ local original_file_content_ours_longer = {}
 local original_file_content_multiple = {}
 local original_file_content_multiple_ours_longer = {}
 local original_fixture_file_empty = {}
+local original_fixture_file_triple = {}
+local original_fixture_file_adjacent = {}
 local fixture_file = './test/fixtures/conflict_other.txt'
 local fixture_file_ours_longer = './test/fixtures/conflict_ours_longer.txt'
 local fixture_file_multiple = './test/fixtures/conflict_multiple.txt'
 local fixture_file_multiple_ours_longer = './test/fixtures/conflict_multiple_ours_longer.txt'
 local fixture_file_empty = './test/fixtures/conflict_empty.txt'
+local fixture_file_triple = './test/fixtures/conflict_triple.txt'
+local fixture_file_adjacent = './test/fixtures/conflict_adjacent.txt'
 local utils = require 'test.e2e.test_utils'
 
 describe('Conflict editing', function()
@@ -23,6 +27,8 @@ describe('Conflict editing', function()
     original_file_content_multiple = vim.fn.readfile(fixture_file_multiple)
     original_file_content_multiple_ours_longer = vim.fn.readfile(fixture_file_multiple_ours_longer)
     original_fixture_file_empty = vim.fn.readfile(fixture_file_empty)
+    original_fixture_file_triple = vim.fn.readfile(fixture_file_triple)
+    original_fixture_file_adjacent = vim.fn.readfile(fixture_file_adjacent)
   end)
 
   after_each(function()
@@ -33,6 +39,8 @@ describe('Conflict editing', function()
     vim.fn.writefile(original_file_content_multiple, fixture_file_multiple)
     vim.fn.writefile(original_file_content_multiple_ours_longer, fixture_file_multiple_ours_longer)
     vim.fn.writefile(original_fixture_file_empty, fixture_file_empty)
+    vim.fn.writefile(original_fixture_file_triple, fixture_file_triple)
+    vim.fn.writefile(original_fixture_file_adjacent, fixture_file_adjacent)
   end)
 
 
@@ -770,6 +778,163 @@ Ours conflict.
 =======
 Theirs conflict.
 >>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Deletes through 3 conflicts - left side', function()
+    utils.open_file(nvim, fixture_file_triple)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 2G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'V5jd', 'x', false)
+
+    local expected = [[
+First line
+
+
+Ours conflict 3.
+Last line]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+Theirs conflict 1.
+Theirs conflict 2.
+Theirs conflict 3.
+Last line]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+<<<<<<< HEAD
+=======
+Theirs conflict 1.
+>>>>>>> another-branch
+<<<<<<< HEAD
+=======
+Theirs conflict 2.
+>>>>>>> another-branch
+<<<<<<< HEAD
+Ours conflict 3.
+=======
+Theirs conflict 3.
+>>>>>>> another-branch
+Last line]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Deletes from inside one conflict directly to inside another conflict', function()
+    utils.open_file(nvim, fixture_file_multiple)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 2G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'Vjjd', 'x', false)
+
+    local expected = [[
+First line
+
+]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+Theirs conflict.
+Theirs conflict.]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+<<<<<<< HEAD
+=======
+Theirs conflict.
+>>>>>>> another-branch
+<<<<<<< HEAD
+=======
+Theirs conflict.
+>>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Deletes across consecutive conflicts boundary', function()
+    utils.open_file(nvim, fixture_file_adjacent)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 1G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'Vjd', 'x', false)
+
+    local expected = [[
+
+]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+Theirs conflict 1.
+Theirs conflict 2.]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+<<<<<<< HEAD
+=======
+Theirs conflict 1.
+>>>>>>> another-branch
+<<<<<<< HEAD
+=======
+Theirs conflict 2.
+>>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Right-side deletion spanning conflicts', function()
+    utils.open_file(nvim, fixture_file_triple)
+    vim.fn.rpcrequest(nvim, 'nvim_input', '<C-W>w')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 2G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'V4jd', 'x', false)
+
+    local expected = [[
+First line
+Ours conflict 1.
+Ours conflict 2.
+Another middle line
+Ours conflict 3.
+Last line]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+
+
+Another middle line
+Theirs conflict 3.
+Last line]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+<<<<<<< HEAD
+Ours conflict 1.
+=======
+>>>>>>> another-branch
+<<<<<<< HEAD
+Ours conflict 2.
+=======
+>>>>>>> another-branch
+Another middle line
+<<<<<<< HEAD
+Ours conflict 3.
+=======
+Theirs conflict 3.
+>>>>>>> another-branch
+Last line]]
     result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
     eq(expected, table.concat(result, '\n'))
   end)

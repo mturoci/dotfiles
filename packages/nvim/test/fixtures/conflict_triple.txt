@@ -1,0 +1,21 @@
+First line
+<<<<<<< HEAD
+Ours conflict 1.
+=======
+Theirs conflict 1.
+>>>>>>> another-branch
+
+Middle line
+<<<<<<< HEAD
+Ours conflict 2.
+=======
+Theirs conflict 2.
+>>>>>>> another-branch
+
+Another middle line
+<<<<<<< HEAD
+Ours conflict 3.
+=======
+Theirs conflict 3.
+>>>>>>> another-branch
+Last line
