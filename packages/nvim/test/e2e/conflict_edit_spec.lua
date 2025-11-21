@@ -663,4 +663,114 @@ Theirs conflict.]]
     result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
     eq(expected, table.concat(result, '\n'))
   end)
+
+  it('Deletes lines spanning from one conflict to another - outside conflicts', function()
+    utils.open_file(nvim, fixture_file_multiple)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 3G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal dd')
+
+    local expected = [[
+First line
+Ours conflict.
+Ours conflict.]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+Theirs conflict.
+Theirs conflict.]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+    expected = [[
+First line
+<<<<<<< HEAD
+Ours conflict.
+=======
+Theirs conflict.
+>>>>>>> another-branch
+<<<<<<< HEAD
+Ours conflict.
+=======
+Theirs conflict.
+>>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Adds text between two conflicts', function()
+    utils.open_file(nvim, fixture_file_multiple)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 3G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'oNew line between conflicts', 'x', false)
+
+    local expected = [[
+First line
+Ours conflict.
+
+New line between conflicts
+Ours conflict.]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+Theirs conflict.
+
+New line between conflicts
+Theirs conflict.]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+    expected = [[
+First line
+<<<<<<< HEAD
+Ours conflict.
+=======
+Theirs conflict.
+>>>>>>> another-branch
+
+New line between conflicts
+<<<<<<< HEAD
+Ours conflict.
+=======
+Theirs conflict.
+>>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
+
+  it('Handles visual selection across conflict boundary', function()
+    utils.open_file(nvim, fixture_file_multiple)
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'normal 2G')
+    vim.fn.rpcrequest(nvim, 'nvim_command', 'sleep 1m')
+    vim.fn.rpcrequest(nvim, 'nvim_feedkeys', 'Vjd', 'x', false)
+
+    local expected = [[
+First line
+
+Ours conflict.]]
+    local result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.LEFT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+
+    expected = [[
+First line
+Theirs conflict.
+Theirs conflict.]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.RIGHT_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+    expected = [[
+First line
+<<<<<<< HEAD
+=======
+Theirs conflict.
+>>>>>>> another-branch
+<<<<<<< HEAD
+Ours conflict.
+=======
+Theirs conflict.
+>>>>>>> another-branch]]
+    result = vim.fn.rpcrequest(nvim, 'nvim_buf_get_lines', utils.ORIGINAL_BUFFER, 0, -1, false)
+    eq(expected, table.concat(result, '\n'))
+  end)
 end)

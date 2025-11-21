@@ -248,6 +248,72 @@ local function is_change_in_conflict()
   return false
 end
 
+local function is_range_spanning_conflicts(first_line, last_line)
+  local start_line = first_line + 1
+  local end_line = last_line
+  local start_conflict, end_conflict
+
+  for _, conflict in ipairs(_conflicts) do
+    if start_line >= conflict.from and start_line <= conflict.to then
+      start_conflict = conflict
+    end
+    if end_line >= conflict.from and end_line <= conflict.to then
+      end_conflict = conflict
+    end
+  end
+
+  -- Range spans conflicts if start is inside a conflict and end is outside or in a different conflict
+  return start_conflict and (not end_conflict or start_conflict ~= end_conflict)
+end
+
+-- Maps split view (when deleted range goes through marker boundary) line numbers to original buffer line numbers accounting for conflict markers.
+-- Returns indices of original buffer lines corresponding to the deleted split view range.
+local function map_split_to_original_lines(first_line, last_line, side)
+  local split_to_original = {}
+  local split_idx = 1
+  local orig_idx = 1
+
+  -- Build mapping for each region
+  for _, conflict in ipairs(_conflicts) do
+    -- Regular lines before conflict map 1:1
+    while split_idx < conflict.from do
+      split_to_original[split_idx] = orig_idx
+      split_idx = split_idx + 1
+      orig_idx = orig_idx + 1
+    end
+
+    -- Conflict lines map to positions within conflict markers
+    local max_len = math.max(conflict.ours.len, conflict.theirs.len)
+    for i = 0, max_len - 1 do
+      if side == 'ours' and i < conflict.ours.len then
+        split_to_original[conflict.from + i] = conflict.original_from + 1 + i
+      elseif side == 'theirs' and i < conflict.theirs.len then
+        split_to_original[conflict.from + i] = conflict.original_from + conflict.ours.len + 2 + i
+      end
+    end
+
+    split_idx = conflict.from + max_len
+    orig_idx = conflict.original_to + 1
+  end
+
+  -- Map remaining lines after last conflict (only up to what we need)
+  local max_needed = last_line
+  for i = 0, max_needed - split_idx + 1 do
+    split_to_original[split_idx + i] = orig_idx + i
+  end
+
+  -- Convert deleted split range to original buffer indices
+  local lines_to_delete = {}
+  for i = first_line, last_line - 1 do
+    local orig = split_to_original[i + 1]
+    if orig then
+      table.insert(lines_to_delete, orig - 1)
+    end
+  end
+
+  return lines_to_delete
+end
+
 local function on_lines_change(buf, other_buf, original_buf, side)
   return function(_, _, _, first_line, last_line, new_end)
     if _is_locked then return end
@@ -256,6 +322,7 @@ local function on_lines_change(buf, other_buf, original_buf, side)
       local lines_added = new_end - first_line
       local lines_removed = last_line - first_line
       local in_conflict = is_change_in_conflict()
+      local spans_conflicts = is_range_spanning_conflicts(first_line, last_line)
       local original_file_offset = get_offset_for_original_buf(last_line, side)
       local added_lines = api.nvim_buf_get_lines(buf, first_line, new_end, false)
       _is_locked = true
@@ -268,21 +335,50 @@ local function on_lines_change(buf, other_buf, original_buf, side)
         end
       end
 
-      if lines_added > lines_removed then
-        local line = first_line + original_file_offset
-        api.nvim_buf_set_lines(original_buf, line, line, false, added_lines)
-      elseif lines_added < lines_removed then
-        api.nvim_buf_set_lines(original_buf, first_line + original_file_offset, last_line + original_file_offset, false,
-          {})
-      elseif lines_added == lines_removed then
-        local line = first_line + original_file_offset
-        api.nvim_buf_set_lines(original_buf, line, line + 1, false, added_lines)
-      end
+      if spans_conflicts and lines_added < lines_removed then
+        -- When deleting across conflict boundaries, map split view lines to original buffer positions
+        local lines_to_delete = map_split_to_original_lines(first_line, last_line, side)
+        table.sort(lines_to_delete)
 
-      if lines_added ~= lines_removed then
+        -- Group consecutive line indices into ranges for efficient deletion
+        local ranges = {}
+        local i = 1
+        while i <= #lines_to_delete do
+          local start = lines_to_delete[i]
+          local finish = start
+          while i < #lines_to_delete and lines_to_delete[i + 1] == finish + 1 do
+            i = i + 1
+            finish = lines_to_delete[i]
+          end
+          table.insert(ranges, { start, finish })
+          i = i + 1
+        end
+
+        -- Delete ranges in reverse to avoid index shifting
+        for idx = #ranges, 1, -1 do
+          api.nvim_buf_set_lines(original_buf, ranges[idx][1], ranges[idx][2] + 1, false, {})
+        end
+
         local ours_buf = side == 'ours' and buf or other_buf
         local theirs_buf = side == 'theirs' and buf or other_buf
         refresh_buffers_content(original_buf, ours_buf, theirs_buf)
+      else
+        if lines_added > lines_removed then
+          local line = first_line + original_file_offset
+          api.nvim_buf_set_lines(original_buf, line, line, false, added_lines)
+        elseif lines_added < lines_removed then
+          api.nvim_buf_set_lines(original_buf, first_line + original_file_offset, last_line + original_file_offset, false,
+            {})
+        elseif lines_added == lines_removed then
+          local line = first_line + original_file_offset
+          api.nvim_buf_set_lines(original_buf, line, line + 1, false, added_lines)
+        end
+
+        if lines_added ~= lines_removed then
+          local ours_buf = side == 'ours' and buf or other_buf
+          local theirs_buf = side == 'theirs' and buf or other_buf
+          refresh_buffers_content(original_buf, ours_buf, theirs_buf)
+        end
       end
 
       _is_locked = false
