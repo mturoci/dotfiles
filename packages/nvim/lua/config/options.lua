@@ -40,12 +40,13 @@ local options = {
   backup         = false,              --- Recommended by coc
   --- Concealed text is completely hidden unless it has a custom replacement character defined (needed for dynamically showing tailwind classes)
   conceallevel   = 0,
-  concealcursor  = "",      --- Set to an empty string to expand tailwind class when on cursorline
-  encoding       = "utf-8", --- The encoding displayed
-  errorbells     = false,   --- Disables sound effect for errors
-  fileencoding   = "utf-8", --- The encoding written to file
-  incsearch      = true,    --- Start searching before pressing enter
-  showmode       = false,   --- Don't show things like -- INSERT -- anymore
+  concealcursor  = "",        --- Set to an empty string to expand tailwind class when on cursorline
+  encoding       = "utf-8",   --- The encoding displayed
+  errorbells     = false,     --- Disables sound effect for errors
+  fileencoding   = "utf-8",   --- The encoding written to file
+  incsearch      = true,      --- Start searching before pressing enter
+  showmode       = false,     --- Don't show things like -- INSERT -- anymore
+  winborder      = "rounded", --- Adds border to floating windows
 }
 
 local globals = {
