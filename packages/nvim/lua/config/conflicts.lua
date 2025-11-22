@@ -98,11 +98,11 @@ function M.parse(lines)
 
   for _, line in ipairs(lines) do
     line_number = line_number + 1
-    if line:match("<<<<<<< HEAD") then
+    if line:match("^<<<<<<<") then
       conflict = { from = line_number - total_removed_lines, original_from = line_number }
-    elseif line:match("=======") then
+    elseif line:match("^=======") then
       conflict.ours = { len = line_number - conflict.from - 1 - total_removed_lines }
-    elseif line:match(">>>>>>>") then
+    elseif line:match("^>>>>>>>") then
       conflict.theirs = { len = line_number - conflict.from - conflict.ours.len - 2 - total_removed_lines }
       total_removed_lines = total_removed_lines + 3 + math.min(conflict.ours.len, conflict.theirs.len)
       conflict.to = line_number - total_removed_lines -- Is this needed?
