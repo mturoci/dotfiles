@@ -1,4 +1,5 @@
 return {
+  { "mturoci/diplomat.nvim" },
   {
     'numToStr/Comment.nvim',
     opts = {},

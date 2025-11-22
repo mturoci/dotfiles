@@ -17,8 +17,6 @@ require("config.lsp")
 require("config.appearance")
 require("config.statusline")
 require("config.keymaps")
-require("config.conflicts")
-
 
 -- Race condition on ssh connections. For some reason, this needs to be after OSC52 has completed registration, not before.
 local utils = require 'config.utils'
