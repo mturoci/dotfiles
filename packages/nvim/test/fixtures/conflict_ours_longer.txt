@@ -1,6 +1,0 @@
-<<<<<<< HEAD
-Ours conflict.
-Ours conflict.
-=======
-Theirs conflict.
->>>>>>> another-branch

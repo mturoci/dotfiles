@@ -35,7 +35,6 @@ local highlights = {
   Comment                                  = { fg = colors.gray },
   Conceal                                  = { bg = colors.none },
   Conditional                              = { fg = colors.green },
-  Conflict                                 = { bg = colors.dark_primary },
   Constant                                 = { fg = colors.err },
   CurSearch                                = { bg = colors.light_gray },
   CursorLine                               = { bg = colors.light_gray },

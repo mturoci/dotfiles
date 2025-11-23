@@ -1,7 +1,0 @@
-Regular text.
-<<<<<<< HEAD
-Ours conflict.
-=======
-Theirs conflict.
->>>>>>> another-branch
-Regular text.
