@@ -117,6 +117,7 @@ local highlights = {
 	makeTarget = { fg = colors.primary },
 	netrwDir = { fg = colors.primary },
 	yamlBlockMappingKey = { fg = colors.primary },
+	yamlFlowIndicator = { fg = colors.text },
 }
 
 for group, attr in pairs(highlights) do
