@@ -55,6 +55,8 @@ setup_zsh_config() {
     create_symlink "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
     # Create symlink for .env
+    touch "$HOME/.env"
+    touch "$DOTFILES_DIR/.env"
     create_symlink "$DOTFILES_DIR/.env" "$HOME/.env"
 
     # Set zsh as default shell if not already
