@@ -10,21 +10,40 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_tmux_macos() {
-    info "Installing tmux for macOS..."
+    info "Installing tmux"
 
-    # Check if Homebrew is installed
+    TMUX_VERSION="3.5a"
+
+    if command_exists tmux; then
+        info "tmux already installed"
+        return
+    fi
+
     if ! command_exists brew; then
         error "Homebrew not found. Please install Homebrew first."
         exit 1
     fi
 
-    # Install tmux via Homebrew
-    if ! command_exists tmux; then
-        info "Installing tmux via Homebrew..."
-        brew install tmux
-    else
-        info "tmux already installed"
-    fi
+    info "Installing dependencies..."
+    brew install libevent ncurses pkg-config automake
+
+    TEMP_DIR=$(mktemp -d)
+    cd "$TEMP_DIR"
+
+    info "Downloading tmux $TMUX_VERSION..."
+    curl -LO "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
+    tar -xzf "tmux-${TMUX_VERSION}.tar.gz"
+    cd "tmux-${TMUX_VERSION}"
+
+    info "Building tmux from source..."
+    ./configure
+    make
+    sudo make install
+
+    cd "$HOME"
+    rm -rf "$TEMP_DIR"
+
+    info "tmux $TMUX_VERSION installed successfully"
 }
 
 install_tpm() {

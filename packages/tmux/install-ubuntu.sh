@@ -10,15 +10,36 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_tmux_ubuntu() {
-    info "Installing tmux for Ubuntu..."
+    info "Installing tmux"
 
-    if ! command_exists tmux; then
-        info "Installing tmux via apt..."
-        sudo apt-get update
-        sudo apt-get install -y tmux
-    else
+    TMUX_VERSION="3.5a"
+
+    if command_exists tmux; then
         info "tmux already installed"
+        return
     fi
+
+    info "Installing dependencies..."
+    sudo apt-get update
+    sudo apt-get install -y libevent-dev ncurses-dev build-essential bison pkg-config automake
+
+    TEMP_DIR=$(mktemp -d)
+    cd "$TEMP_DIR"
+
+    info "Downloading tmux $TMUX_VERSION..."
+    wget "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
+    tar -xzf "tmux-${TMUX_VERSION}.tar.gz"
+    cd "tmux-${TMUX_VERSION}"
+
+    info "Building tmux from source..."
+    ./configure
+    make
+    sudo make install
+
+    cd "$HOME"
+    rm -rf "$TEMP_DIR"
+
+    info "tmux $TMUX_VERSION installed successfully"
 }
 
 install_tpm() {
