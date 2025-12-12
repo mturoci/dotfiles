@@ -10,7 +10,6 @@ local conf = require("telescope.config").values
 local telescope_utils = require("telescope.utils")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
-local action_set = require("telescope.actions.set")
 local entry_display = require("telescope.pickers.entry_display")
 local statusline = require("config.statusline")
 local utils = require("config.utils")
@@ -246,12 +245,6 @@ M.my_git_status = function(opts)
 			end,
 		}),
 		attach_mappings = function(prompt_bufnr, map)
-			map({ "i", "n" }, "<M-CR>", function()
-				actions.close(prompt_bufnr)
-				illuminate.toggle()
-				vim.cmd("edit " .. action_state.get_selected_entry().filename)
-			end)
-
 			map({ "n" }, "<tab>", function()
 				local entry = action_state.get_selected_entry(prompt_bufnr)
 				if not entry then
@@ -275,28 +268,38 @@ M.my_git_status = function(opts)
 				action_state.get_current_picker(prompt_bufnr):refresh(create_finder(), { reset_prompt = false })
 
 				vim.defer_fn(function()
-					for i = 1, selected_idx - 1, 1 do
+					for _ = 1, selected_idx - 1, 1 do
 						actions.move_selection_next(prompt_bufnr)
 					end
 				end, 1)
 			end)
 
-			actions.select_default:replace(utils.async(function()
-				local prompt = action_state.get_current_picker(prompt_bufnr):_get_prompt()
-				local _, staged_files = get_git_files()
+			actions.select_default:replace(function()
+				actions.close(prompt_bufnr)
+				illuminate.toggle()
+				vim.cmd("edit " .. action_state.get_selected_entry().filename)
+			end)
 
-				if vim.tbl_count(staged_files) == 0 then
-					vim.notify("No staged files to commit", vim.log.levels.WARN)
-					return
-				end
+			map(
+				{ "i", "n" },
+				"<M-CR>",
+				utils.async(function()
+					local prompt = action_state.get_current_picker(prompt_bufnr):_get_prompt()
+					local _, staged_files = get_git_files()
 
-				utils.spawn("git", { "commit", "-m", prompt })
-				utils.vim_loop(function()
-					actions.close(prompt_bufnr)
-					illuminate.toggle()
-					statusline.refresh()
+					if vim.tbl_count(staged_files) == 0 then
+						vim.notify("No staged files to commit", vim.log.levels.WARN)
+						return
+					end
+
+					utils.spawn("git", { "commit", "-m", prompt })
+					utils.vim_loop(function()
+						actions.close(prompt_bufnr)
+						illuminate.toggle()
+						statusline.refresh()
+					end)
 				end)
-			end))
+			)
 
 			return true
 		end,
