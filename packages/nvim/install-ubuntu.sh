@@ -55,6 +55,9 @@ install_nvim() {
     cd -
     rm -rf "$TMP_DIR"
 
+    info "Creating symlink to /usr/local/bin..."
+    sudo ln -sf "$INSTALL_DIR/nvim-linux-${NVIM_ARCH}/bin/nvim" /usr/local/bin/nvim
+
     info "neovim installation complete! Location: $INSTALL_DIR/nvim-linux-${NVIM_ARCH}"
 }
 
