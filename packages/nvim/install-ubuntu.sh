@@ -16,11 +16,26 @@ install_nvim() {
     fi
 
     NVIM_VERSION="0.11.5"
-    NVIM_TARBALL="nvim-linux64.tar.gz"
+    ARCH=$(uname -m)
+
+    case "$ARCH" in
+        x86_64)
+            NVIM_ARCH="x86_64"
+            ;;
+        aarch64|arm64)
+            NVIM_ARCH="arm64"
+            ;;
+        *)
+            error "Unsupported architecture: $ARCH"
+            exit 1
+            ;;
+    esac
+
+    NVIM_TARBALL="nvim-linux-${NVIM_ARCH}.tar.gz"
     NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/${NVIM_TARBALL}"
     INSTALL_DIR="$HOME/.local/share"
 
-    info "Downloading neovim ${NVIM_VERSION}..."
+    info "Downloading neovim ${NVIM_VERSION} for ${NVIM_ARCH}..."
     TMP_DIR=$(mktemp -d)
     cd "$TMP_DIR"
 
@@ -40,7 +55,7 @@ install_nvim() {
     cd -
     rm -rf "$TMP_DIR"
 
-    info "neovim installation complete! Location: $INSTALL_DIR/nvim-linux64"
+    info "neovim installation complete! Location: $INSTALL_DIR/nvim-linux-${NVIM_ARCH}"
 }
 
 install_delta() {
