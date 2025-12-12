@@ -150,25 +150,38 @@ M.my_git_status = function(opts)
 		separator = "",
 		items = {
 			{ width = 2 },
-			{ width = 1 },
+			{ width = 2 },
 			{ remaining = true },
 			{ width = 100 },
 		},
 	})
 
 	local function make_display(entry)
-		local icon, hl_group = telescope_utils.get_devicons(entry.filename, false)
 		local parent = vim.fs.dirname(entry.filename)
 		local basename = vim.fs.basename(entry.filename)
 		parent = vim.fn.fnamemodify(parent, ":~:.")
-		local staged_icon = entry.value.is_staged and "" or " "
+		local staged_icon = entry.value.is_staged and "" or " "
+
+		local status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
+		local status_icon = "  "
+		local status_hl = "TelescopeResultsComment"
+		if status == "M" then
+			status_icon = ""
+			status_hl = "GitSignsChange"
+		elseif status == "A" or status == "?" then
+			status_icon = ""
+			status_hl = "GitSignsAdd"
+		elseif status == "D" then
+			status_icon = ""
+			status_hl = "GitSignsDelete"
+		end
 
 		return displayer({
 			{
 				staged_icon,
-				entry.value.is_staged and "TelescopeResultsIdentifier" or "TelescopeResultsComment",
+				entry.value.is_staged and "GitSignsAdd" or "TelescopeResultsComment",
 			},
-			{ icon, hl_group },
+			{ status_icon, status_hl },
 			{ " " .. basename .. " ", "TelescopeResultsIdentifier" },
 			{ parent, "TelescopeResultsComment" },
 		})
