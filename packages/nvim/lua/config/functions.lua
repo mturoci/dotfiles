@@ -217,7 +217,9 @@ M.my_git_status = function(opts)
 		previewer = previewers.new_termopen_previewer({
 			get_command = function(entry)
 				if entry.value.is_staged then
-					if entry.value.staged_status == "A" then
+					if entry.value.staged_status == "D" then
+						return { "echo", "The file was deleted." }
+					elseif entry.value.staged_status == "A" then
 						return {
 							"git",
 							"-c",
@@ -241,7 +243,9 @@ M.my_git_status = function(opts)
 						}
 					end
 				else
-					if entry.value.unstaged_status == "?" then
+					if entry.value.unstaged_status == "D" then
+						return { "echo", "The file was deleted" }
+					elseif entry.value.unstaged_status == "?" then
 						return { "cat", entry.value.filename }
 					else
 						return {
