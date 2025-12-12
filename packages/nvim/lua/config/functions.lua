@@ -291,6 +291,24 @@ M.my_git_status = function(opts)
 				end, 1)
 			end)
 
+			map({ "n" }, "<M-u>", function()
+				local entry = action_state.get_selected_entry(prompt_bufnr)
+				if not entry then
+					return
+				end
+
+				local is_untracked = (entry.value.is_staged and entry.value.staged_status == "?")
+					or (not entry.value.is_staged and entry.value.unstaged_status == "?")
+
+				if is_untracked then
+					vim.fn.system("rm " .. vim.fn.shellescape(entry.value.filename))
+				else
+					vim.fn.system("git restore --worktree --staged " .. vim.fn.shellescape(entry.value.filename))
+				end
+
+				action_state.get_current_picker(prompt_bufnr):refresh(create_finder(), { reset_prompt = false })
+			end)
+
 			actions.select_default:replace(function()
 				actions.close(prompt_bufnr)
 				illuminate.toggle()
