@@ -73,7 +73,6 @@ main() {
         install_zsh_ubuntu
     fi
     setup_zsh_config
-    source "$HOME/.zshrc"
 }
 
 main "$@"
