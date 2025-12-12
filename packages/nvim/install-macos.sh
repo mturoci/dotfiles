@@ -17,7 +17,7 @@ install_nvim_macos() {
 
     if ! command_exists nvim; then
         info "Installing neovim via Homebrew..."
-        brew install neovim@0.9.4
+        brew install neovim
     else
         info "neovim already installed"
     fi
