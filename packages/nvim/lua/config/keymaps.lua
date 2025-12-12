@@ -19,6 +19,7 @@ end
 keymap("n", "<leader>p", builtin.find_files, {})
 keymap("n", "<leader>ff", builtin.live_grep, {})
 keymap("n", "<leader>fh", builtin.help_tags, {})
+keymap("n", "<leader>gl", functions.my_git_status, {})
 keymap("n", "<leader>fc", functions.my_git_bcommits, {})
 
 -- Window management.
@@ -39,7 +40,7 @@ keymap("n", "<leader>gpl", silent_shell("git pull"), {})
 keymap("n", "<leader>gps", silent_shell("git push"), {})
 keymap("n", "<leader>grh", silent_shell("git reset --hard"), {})
 keymap("n", "<leader>grs", silent_shell("git reset --soft HEAD~1"), {})
-keymap("n", "<leader>gc", functions.my_git_status, {})
+keymap("n", "<leader>gc", functions.commit, {})
 keymap("n", "<leader>gbl", builtin.git_branches, {})
 keymap("n", "<leader>gbt", silent_shell("git checkout -"), {})
 
