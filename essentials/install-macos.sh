@@ -129,11 +129,32 @@ setup_git_config() {
     info "Git configuration complete!"
 }
 
+setup_config_symlinks() {
+    info "Setting up config file symlinks..."
+
+    local configs_dir="$SCRIPT_DIR/configs"
+
+    if [ ! -d "$configs_dir" ]; then
+        warn "Configs directory not found: $configs_dir"
+        return
+    fi
+
+    for config_file in "$configs_dir"/*; do
+        if [ -f "$config_file" ]; then
+            local filename=$(basename "$config_file")
+            create_symlink "$config_file" "$HOME/$filename"
+        fi
+    done
+
+    info "Config symlinks setup complete!"
+}
+
 main() {
     if [ "$SKIP_PACKAGES" != "true" ]; then
         install_essentials_macos
     fi
     setup_git_config
+    setup_config_symlinks
 }
 
 main "$@"
