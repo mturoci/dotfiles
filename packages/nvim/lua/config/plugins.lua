@@ -77,7 +77,7 @@ return {
 	{ "williamboman/mason-lspconfig.nvim" },
 	{ "neovim/nvim-lspconfig" },
 	{ "nvim-tree/nvim-web-devicons" },
-	-- { 'github/copilot.vim' },
+	{ "github/copilot.vim" },
 	{ "tpope/vim-abolish" },
 	{ "https://github.com/windwp/nvim-ts-autotag" },
 	{
