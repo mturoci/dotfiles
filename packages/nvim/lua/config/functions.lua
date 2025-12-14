@@ -206,6 +206,12 @@ M.my_git_status = function(opts)
 	local entries = {}
 	local function create_finder()
 		local files, _ = get_git_files()
+		table.sort(files, function(a, b)
+			if (a.status == "UU") ~= (b.status == "UU") then
+				return a.status == "UU"
+			end
+			return a.abs_path < b.abs_path
+		end)
 		return finders.new_table({
 			results = files,
 			entry_maker = function(entry)
