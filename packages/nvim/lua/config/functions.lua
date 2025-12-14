@@ -115,31 +115,44 @@ M.my_git_status = function(opts)
 			local staged_status = status:sub(1, 1)
 			local unstaged_status = status:sub(2, 2)
 
-			local has_staged = staged_status ~= " " and staged_status ~= "?"
-			local has_unstaged = unstaged_status ~= " "
 			local abs_path = vim.fn.fnamemodify(filename, ":p")
+			local is_conflict = staged_status == "U" or unstaged_status == "U"
 
-			if has_staged then
-				table.insert(files, {
-					abs_path = abs_path,
-					filename = filename,
-					is_staged = true,
-					staged_status = staged_status,
-					unstaged_status = " ",
-					status = staged_status .. " ",
-				})
-				staged_files[abs_path] = true
-			end
-
-			if has_unstaged then
+			if is_conflict then
 				table.insert(files, {
 					abs_path = abs_path,
 					filename = filename,
 					is_staged = false,
-					staged_status = " ",
-					unstaged_status = unstaged_status,
-					status = " " .. unstaged_status,
+					staged_status = "U",
+					unstaged_status = "U",
+					status = "UU",
 				})
+			else
+				local has_staged = staged_status ~= " " and staged_status ~= "?"
+				local has_unstaged = unstaged_status ~= " "
+
+				if has_staged then
+					table.insert(files, {
+						abs_path = abs_path,
+						filename = filename,
+						is_staged = true,
+						staged_status = staged_status,
+						unstaged_status = " ",
+						status = staged_status .. " ",
+					})
+					staged_files[abs_path] = true
+				end
+
+				if has_unstaged then
+					table.insert(files, {
+						abs_path = abs_path,
+						filename = filename,
+						is_staged = false,
+						staged_status = " ",
+						unstaged_status = unstaged_status,
+						status = " " .. unstaged_status,
+					})
+				end
 			end
 		end
 
@@ -165,7 +178,10 @@ M.my_git_status = function(opts)
 		local status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
 		local status_icon = "  "
 		local status_hl = "TelescopeResultsComment"
-		if status == "M" then
+		if status == "U" then
+			status_icon = ""
+			status_hl = "DiagnosticError"
+		elseif status == "M" then
 			status_icon = ""
 			status_hl = "GitSignsChange"
 		elseif status == "A" or status == "?" then
