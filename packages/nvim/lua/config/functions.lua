@@ -206,12 +206,17 @@ M.my_git_status = function(opts)
 	local entries = {}
 	local function create_finder()
 		local files, _ = get_git_files()
+		if #files == 0 then
+			return nil
+		end
+
 		table.sort(files, function(a, b)
 			if (a.status == "UU") ~= (b.status == "UU") then
 				return a.status == "UU"
 			end
 			return a.abs_path < b.abs_path
 		end)
+
 		return finders.new_table({
 			results = files,
 			entry_maker = function(entry)
@@ -227,6 +232,23 @@ M.my_git_status = function(opts)
 		})
 	end
 
+	local function refresh(prompt_bufnr)
+		local new_finder = create_finder()
+		if not new_finder then
+			actions.close(prompt_bufnr)
+			illuminate.toggle()
+			return false
+		end
+		action_state.get_current_picker(prompt_bufnr):refresh(new_finder, { reset_prompt = false })
+		return true
+	end
+
+	-- TODO: Maybe displaying initial empty is fine?
+	local finder = create_finder()
+	if not finder then
+		return
+	end
+
 	local picker = pickers.new(opts or {}, {
 		prompt_title = "Git Status",
 		prompt_prefix = "",
@@ -235,7 +257,7 @@ M.my_git_status = function(opts)
 			return ""
 		end,
 		initial_mode = "normal",
-		finder = create_finder(),
+		finder = finder,
 		previewer = previewers.new_termopen_previewer({
 			get_command = function(entry)
 				if entry.value.is_staged then
@@ -304,7 +326,9 @@ M.my_git_status = function(opts)
 					vim.fn.system("git add " .. vim.fn.shellescape(entry.value.filename))
 				end
 
-				action_state.get_current_picker(prompt_bufnr):refresh(create_finder(), { reset_prompt = false })
+				if not refresh(prompt_bufnr) then
+					return
+				end
 
 				vim.defer_fn(function()
 					for _ = 1, selected_idx - 1, 1 do
@@ -328,7 +352,7 @@ M.my_git_status = function(opts)
 					vim.fn.system("git restore --worktree --staged " .. vim.fn.shellescape(entry.value.filename))
 				end
 
-				action_state.get_current_picker(prompt_bufnr):refresh(create_finder(), { reset_prompt = false })
+				refresh(prompt_bufnr)
 			end)
 
 			actions.select_default:replace(function()
