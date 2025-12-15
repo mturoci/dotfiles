@@ -98,7 +98,6 @@ function OpenPopup(title, val, submit)
 	vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>", "<cmd>lua " .. submit .. "(" .. win_id .. ")<CR>", keymap_opts)
 	vim.api.nvim_buf_set_keymap(bufnr, "i", "<CR>", "<cmd>lua " .. submit .. "(" .. win_id .. ")<CR>", keymap_opts)
 	vim.api.nvim_buf_set_keymap(bufnr, "n", "q", "<cmd>lua ClosePopup(" .. win_id .. ")<CR>", keymap_opts)
-	vim.api.nvim_buf_set_keymap(bufnr, "i", "q", "<cmd>lua ClosePopup(" .. win_id .. ")<CR>", keymap_opts)
 end
 
 M.my_git_status = function(opts)
