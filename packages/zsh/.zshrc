@@ -70,7 +70,6 @@ alias d="docker"
 alias sed="gsed"
 alias prj="cd $HOME/projects"
 alias python3="python"
-alias gemini=/opt/homebrew/Cellar/gemini-cli/0.1.18/bin/gemini
 
 # Additional PATH exports
 export PATH="/usr/local/opt/protobuf@3.6/bin:$PATH"
