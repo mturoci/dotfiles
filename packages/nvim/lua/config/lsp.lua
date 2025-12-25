@@ -25,6 +25,25 @@ require("mason-lspconfig").setup({
     end,
     ["lua_ls"] = function()
       require("lspconfig").lua_ls.setup({ capabilities = capabilities })
-    end
+    end,
+    ["tsgo"] = {
+      cmd = { "tsgo", "--lsp", "--stdio" },
+      filetypes = {
+        "javascript",
+        "javascriptreact",
+        "javascript.jsx",
+        "typescript",
+        "typescriptreact",
+        "typescript.tsx",
+      },
+      root_markers = {
+        "tsconfig.json",
+        "jsconfig.json",
+        "package.json",
+        ".git",
+        "tsconfig.base.json",
+      },
+      enabled = true,
+    },
   }
 })
