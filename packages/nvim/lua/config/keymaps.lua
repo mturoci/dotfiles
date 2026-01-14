@@ -16,10 +16,10 @@ local function git_with_curr_file(cmd)
 end
 
 -- Telescope find/grep files.
-keymap("n", "<leader>p", builtin.find_files, {})
-keymap("n", "<leader>ff", builtin.live_grep, {})
-keymap("n", "<leader>fh", builtin.help_tags, {})
-keymap("n", "<leader>fc", functions.my_git_bcommits, {})
+keymap("n", "<leader>f", builtin.find_files, {})
+keymap("n", "<leader>s", builtin.live_grep, {})
+keymap("n", "<leader>hl", builtin.help_tags, {})
+keymap("n", "<leader>bc", functions.my_git_bcommits, {})
 
 -- Window management.
 keymap("n", "<C-h>", "<C-w>h", silent)
@@ -52,7 +52,6 @@ keymap("n", "<C-u>", "<C-u>zz", silent)
 keymap("n", "<C-d>", "<C-d>zz", silent)
 keymap("n", "<C-o>", "<C-o>zz", silent)
 keymap("n", "<C-i>", "<C-i>zz", silent)
-keymap("n", "<leader>fe", ":luafile %<CR>", silent)
 keymap("n", "]q", ":cnext<CR>zz:redraw!<CR>", silent)
 keymap("n", "[q", ":cprev<CR>zz:redraw!<CR>", silent)
 keymap("n", "<leader>tf", functions.toggle_format_on_save, {})
@@ -76,9 +75,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		keymap("n", "<space>rn", functions.rename, opts)
 		keymap({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
 		keymap("n", "so", builtin.lsp_document_symbols, opts)
-		keymap("n", "<space>f", function()
-			vim.lsp.buf.format({ async = true })
-		end, opts)
 	end,
 })
 
