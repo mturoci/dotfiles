@@ -160,7 +160,12 @@ local git_dir = ""
 while dir.filename ~= "" and dir.filename ~= "/" do
   local git_path = dir:joinpath(".git")
   if git_path:exists() then
-    git_dir = git_path.filename
+    if git_path:is_dir() then
+      git_dir = git_path.filename
+    else
+      local content = git_path:read()
+      git_dir = content:match("gitdir: ([^\n\r]+)")
+    end
     break
   end
   dir = path:new(dir:parent())
