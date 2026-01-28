@@ -123,19 +123,33 @@ return {
 		config = function()
 			local conform = require("conform")
 
+			local function get_js_formatter()
+				local pkg_path = vim.fn.findfile("package.json", vim.fn.getcwd() .. ";")
+				if pkg_path ~= "" then
+					local content = vim.fn.readfile(pkg_path)
+					local json_str = table.concat(content, "\n")
+					if json_str:find('"0xfmt"') then
+						return { "oxfmt" }
+					end
+				end
+				return { "prettierd" }
+			end
+
+			local js_formatter = get_js_formatter()
+
 			conform.setup({
 				formatters_by_ft = {
-					javascript = { "oxfmt" },
-					typescript = { "oxfmt" },
-					javascriptreact = { "oxfmt" },
-					typescriptreact = { "oxfmt" },
-					svelte = { "oxfmt" },
-					css = { "oxfmt" },
-					html = { "oxfmt" },
-					json = { "oxfmt" },
-					yaml = { "oxfmt" },
-					markdown = { "oxfmt" },
-					graphql = { "oxfmt" },
+					javascript = js_formatter,
+					typescript = js_formatter,
+					javascriptreact = js_formatter,
+					typescriptreact = js_formatter,
+					svelte = js_formatter,
+					css = js_formatter,
+					html = js_formatter,
+					json = js_formatter,
+					yaml = js_formatter,
+					markdown = js_formatter,
+					graphql = js_formatter,
 					lua = { "luaformatter" },
 					python = { "black" },
 					php = { "blade-formatter" },
