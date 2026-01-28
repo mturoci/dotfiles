@@ -128,7 +128,7 @@ return {
 				if pkg_path ~= "" then
 					local content = vim.fn.readfile(pkg_path)
 					local json_str = table.concat(content, "\n")
-					if json_str:find('"0xfmt"') then
+					if json_str:find('"oxfmt"') then
 						return { "oxfmt" }
 					end
 				end
@@ -166,23 +166,32 @@ return {
 	{
 		"mfussenegger/nvim-lint",
 		lazy = true,
-		event = { "BufReadPre", "BufNewFile" }, -- to disable, comment this out
+		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			local lint = require("lint")
 
-			-- lint.linters_by_ft = {
-			-- 	javascript = { "eslint_d" },
-			-- 	typescript = { "eslint_d" },
-			-- 	javascriptreact = { "eslint_d" },
-			-- 	typescriptreact = { "eslint_d" },
-			-- 	svelte = { "eslint_d" },
-			-- }
+			local function has_oxlint()
+				local pkg_path = vim.fn.findfile("package.json", vim.fn.expand("%:p:h") .. ";")
+				if pkg_path ~= "" then
+					local content = vim.fn.readfile(pkg_path)
+					local json_str = table.concat(content, "\n")
+					return json_str:find('"oxlint"')
+				end
+				return false
+			end
 
 			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 				group = lint_augroup,
 				callback = function()
+					local ft = vim.bo.filetype
+					local js_fts = { javascript = true, typescript = true, javascriptreact = true, typescriptreact = true, svelte = true }
+					if js_fts[ft] and not has_oxlint() then
+						lint.linters_by_ft[ft] = { "eslint_d" }
+					elseif js_fts[ft] then
+						lint.linters_by_ft[ft] = { "oxlint" }
+					end
 					lint.try_lint()
 				end,
 			})
