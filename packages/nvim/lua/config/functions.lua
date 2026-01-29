@@ -49,7 +49,7 @@ function SubmitRenamePopup(win_id)
 	end
 
 	local method = "textDocument/rename"
-	local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+	local params = vim.lsp.util.make_position_params(0, client.offset_encoding or "utf-16")
 	params.newName = val[1]
 
 	local res = client.request_sync(method, params, 1000)
