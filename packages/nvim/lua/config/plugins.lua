@@ -167,6 +167,11 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			local lint = require("lint")
+			lint.linters.markdownlint.args = function()
+				local local_config = vim.fn.findfile(".markdownlint.json", vim.fn.expand("%:p:h") .. ";")
+				local config = local_config ~= "" and local_config or vim.fn.expand("~/.markdownlint.json")
+				return { "--stdin", "--config", config }
+			end
 
 			local function has_oxlint()
 				local pkg_path = vim.fn.findfile("package.json", vim.fn.expand("%:p:h") .. ";")
