@@ -146,7 +146,7 @@ return {
 					html = js_formatter,
 					json = js_formatter,
 					yaml = js_formatter,
-					markdown = js_formatter,
+					markdown = { "markdownlint" },
 					graphql = js_formatter,
 					lua = { "luaformatter" },
 					python = { "black" },
@@ -184,12 +184,19 @@ return {
 				group = lint_augroup,
 				callback = function()
 					local ft = vim.bo.filetype
-					local js_fts = { javascript = true, typescript = true, javascriptreact = true, typescriptreact = true, svelte = true }
+					local js_fts = {
+						javascript = true,
+						typescript = true,
+						javascriptreact = true,
+						typescriptreact = true,
+						svelte = true,
+					}
 					if js_fts[ft] and not has_oxlint() then
 						lint.linters_by_ft[ft] = { "eslint_d" }
 					elseif js_fts[ft] then
 						lint.linters_by_ft[ft] = { "oxlint" }
 					end
+					lint.linters_by_ft.markdown = { "markdownlint" }
 					lint.try_lint()
 				end,
 			})
