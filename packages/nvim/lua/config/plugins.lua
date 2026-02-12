@@ -146,7 +146,7 @@ return {
 					html = js_formatter,
 					json = js_formatter,
 					yaml = js_formatter,
-					markdown = { "markdownlint" },
+					markdown = js_formatter,
 					graphql = js_formatter,
 					lua = { "luaformatter" },
 					python = { "black" },
