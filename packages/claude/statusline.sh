@@ -15,6 +15,15 @@ used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 pct_int=0
 [ -n "$used_pct" ] && pct_int=$(printf '%.0f' "$used_pct")
 
+total_in=$(echo "$input" | jq -r '.context_window.total_input_tokens // empty')
+total_out=$(echo "$input" | jq -r '.context_window.total_output_tokens // empty')
+tokens_fmt=""
+if [ -n "$total_in" ] && [ -n "$total_out" ]; then
+  in_k=$(awk "BEGIN {printf \"%.0f\", $total_in/1000}")
+  out_k=$(awk "BEGIN {printf \"%.0f\", $total_out/1000}")
+  tokens_fmt="${in_k}K/${out_k}K"
+fi
+
 cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
 cost_fmt=""
 [ -n "$cost" ] && cost_fmt=$(printf '%.2f' "$cost")
@@ -59,6 +68,12 @@ out+="${bg_light}${fg_tc}${sep}"
 
 # context segment (inactive)
 out+="${bg_light}${fg_tc}  ${pct_int}% "
+
+# thin separator + session tokens if present
+if [ -n "$tokens_fmt" ]; then
+  out+="${fg_gray}${thin}"
+  out+="${fg_tc}  ${tokens_fmt} "
+fi
 
 # thin separator + cost if present
 if [ -n "$cost_fmt" ]; then
