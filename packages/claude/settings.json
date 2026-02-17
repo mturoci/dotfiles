@@ -1,5 +1,4 @@
 {
-  "apiKeyHelper": "~/.claude/anthropic_key.sh",
   "model": "opus",
   "statusLine": {
     "type": "command",
