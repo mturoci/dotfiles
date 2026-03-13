@@ -18,7 +18,19 @@ setup_configs() {
     info "Claude configuration complete!"
 }
 
+install_claude() {
+    if command_exists claude; then
+        info "Claude Code already installed"
+    else
+        info "Installing Claude Code..."
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+}
+
 main() {
+    if [ "$SKIP_PACKAGES" != "true" ]; then
+        install_claude
+    fi
     setup_configs
 }
 
