@@ -41,6 +41,8 @@ export MACOSX_DEPLOYMENT_TARGET="10.14"
 # Remove custom name@name
 export DEFAULT_USER="$(whoami)"
 
+export TZ="Europe/Prague"
+
 # Show only current dir instead of full path
 prompt_dir() {
   prompt_segment blue black "${PWD##*/}"
