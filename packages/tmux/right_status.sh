@@ -52,4 +52,4 @@ else
   color_mem="#[fg=red]"
 fi
 
-echo "#[fg=#3a3a3a]#[fg=#a7c080,bg=#3a3a3a]  $(date +"%H:%M ")  $color_cpu  $cpu_usage% "
+echo "#[fg=#3a3a3a]#[fg=#a7c080,bg=#3a3a3a]  $(date +"%H:%M ")  $color_cpu  $cpu_usage% "
