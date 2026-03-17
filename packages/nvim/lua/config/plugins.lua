@@ -279,6 +279,10 @@ return {
 		config = function()
 			require("oil").setup({
 				skip_confirm_for_simple_edits = true,
+        columns = {
+          "icon",
+          "size",
+        },
 				lsp_file_methods = {
 					timeout_ms = 1000,
 					autosave_changes = true,
