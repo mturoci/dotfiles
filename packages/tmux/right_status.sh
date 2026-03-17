@@ -1,8 +1,24 @@
 #!/bin/bash
 
-cpu_usage=$(top -l 1 | awk '/CPU usage/ {print $3}' | cut -d'%' -f1)
-mem_used=$(top -l 1 | awk '/PhysMem/ {print $2}' | cut -d'M' -f1)
-mem_total=$(top -l 1 | awk '/PhysMem/ {print $6}' | cut -d'M' -f1)
+if [[ "$(uname)" == "Darwin" ]]; then
+  top_out=$(top -l 1)
+  cpu_usage=$(echo "$top_out" | awk '/CPU usage/ {print $3}' | cut -d'%' -f1)
+  mem_used=$(echo "$top_out" | awk '/PhysMem/ {print $2}' | cut -d'M' -f1)
+  mem_total=$(echo "$top_out" | awk '/PhysMem/ {print $6}' | cut -d'M' -f1)
+else
+  cpu_idle=$(top -bn 1 | awk '/^%Cpu/ {
+    n = split($0, a, ",")
+    for (i=1; i<=n; i++) {
+      if (a[i] ~ /id/) {
+        match(a[i], /[0-9]+\.?[0-9]*/)
+        print substr(a[i], RSTART, RLENGTH)
+      }
+    }
+  }')
+  cpu_usage=$(echo "scale=1; 100 - $cpu_idle" | bc)
+  mem_used=$(free -m | awk '/^Mem:/ {print $3}')
+  mem_total=$(free -m | awk '/^Mem:/ {print $2}')
+fi
 
 mem_usage=$(echo "scale=2; $mem_used/$mem_total*100" | bc)
 
@@ -36,4 +52,4 @@ else
   color_mem="#[fg=red]"
 fi
 
-echo "#[fg=#3a3a3a]#[fg=#a7c080,bg=#3a3a3a]  $(date +"%H:%M ") $color_cpu  $cpu_usage% "
+echo "#[fg=#3a3a3a]#[fg=#a7c080,bg=#3a3a3a]  $(date +"%H:%M ")  $color_cpu  $cpu_usage% "
