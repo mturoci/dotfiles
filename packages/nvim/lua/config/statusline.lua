@@ -21,7 +21,7 @@ local POWERLINE_LEFT       = "%#StatuslineBackground#%#StatuslineBackgroundLi
 local TMUX_POWERLINE_LEFT  = table.concat({ "#[fg=", COLOR_FG, "]#[fg=", COLOR_PRIMARY, ",bg=", COLOR_FG, "]" })
 local TMUX_POWERLINE_RIGHT = table.concat({ "#[bg=default,fg=", COLOR_FG, "]", "#[bg=default]" })
 local TMUX_RIGHT_LENGTH    = 18
-local TMUX_ORIGINAL_RIGHT  = '#(/Users/mturoci/.tmux/right_status.sh)'
+local TMUX_ORIGINAL_RIGHT  = '#(' .. os.getenv("HOME") .. '/.tmux/right_status.sh)'
 local TMUX_ERR             = get_tmux_color("#" .. ("%06x"):format(COLOR_ERR), COLOR_FG)
 local TMUX_WARN            = get_tmux_color("#" .. ("%06x"):format(COLOR_WARN), COLOR_FG)
 local TMUX_HINT            = get_tmux_color("#" .. ("%06x"):format(COLOR_HINT), COLOR_FG)
