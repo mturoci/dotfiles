@@ -45,8 +45,7 @@ setup_tmux_config() {
     create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
     create_symlink "$SCRIPT_DIR/start_tmux.sh" "$HOME/start_tmux.sh"
 
-    cp "$SCRIPT_DIR/right_status.sh" "$HOME/.tmux/right_status.sh"
-    chmod +x "$HOME/.tmux/right_status.sh"
+    create_symlink "$SCRIPT_DIR/right_status.sh" "$HOME/.tmux/right_status.sh"
 
     install_tpm
 
