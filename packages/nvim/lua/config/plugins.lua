@@ -183,6 +183,11 @@ return {
 				return false
 			end
 
+			local function mason_installed(name)
+				local mason_registry = require("mason-registry")
+				return mason_registry.is_installed(name)
+			end
+
 			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
@@ -196,10 +201,12 @@ return {
 						typescriptreact = true,
 						svelte = true,
 					}
-					if js_fts[ft] and not has_oxlint() then
-						lint.linters_by_ft[ft] = { "eslint_d" }
-					elseif js_fts[ft] then
-						lint.linters_by_ft[ft] = { "oxlint" }
+					if js_fts[ft] then
+						if has_oxlint() then
+							lint.linters_by_ft[ft] = { "oxlint" }
+						elseif mason_installed("eslint_d") then
+							lint.linters_by_ft[ft] = { "eslint_d" }
+						end
 					end
 					lint.linters_by_ft.markdown = { "markdownlint" }
 					lint.try_lint()
