@@ -173,7 +173,8 @@ install_runtimes() {
     # Check and install Lua 5.1.5
     if ! command_exists lua || ! lua -v 2>&1 | grep -q "5.1.5"; then
         info "Lua 5.1.5 not found. Installing via asdf..."
-        asdf install lua 5.1.5
+        # Pin LuaRocks to 3.11.1 — 3.12+ rockspecs use syntax incompatible with Lua 5.1
+        ASDF_LUA_LUAROCKS_VERSION=3.11.1 asdf install lua 5.1.5
         asdf set --home lua 5.1.5
         info "Lua 5.1.5 installed and set as global"
     else
