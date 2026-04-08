@@ -144,7 +144,7 @@ return {
 					svelte = js_formatter,
 					css = js_formatter,
 					html = js_formatter,
-					json = js_formatter,
+					json = { 'jq' },
 					yaml = js_formatter,
 					markdown = js_formatter,
 					graphql = js_formatter,
