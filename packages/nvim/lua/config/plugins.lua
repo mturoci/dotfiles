@@ -121,19 +121,15 @@ return {
 		config = function()
 			local conform = require("conform")
 
-			local function get_js_formatter()
-				local pkg_path = vim.fn.findfile("package.json", vim.fn.getcwd() .. ";")
-				if pkg_path ~= "" then
-					local content = vim.fn.readfile(pkg_path)
-					local json_str = table.concat(content, "\n")
-					if json_str:find('"oxfmt"') then
-						return { "oxfmt" }
-					end
-				end
-				return { "prettierd" }
+			local oxfmt_bin = vim.fs.find("node_modules/oxfmt/bin/oxfmt", { upward = true, type = "file" })[1]
+			local js_formatter = oxfmt_bin and { "oxfmt" } or { "prettierd" }
+			if oxfmt_bin then
+				conform.formatters.oxfmt = {
+					command = oxfmt_bin,
+					args = { "--stdin-filepath", "$FILENAME" },
+					stdin = true,
+				}
 			end
-
-			local js_formatter = get_js_formatter()
 
 			conform.setup({
 				formatters_by_ft = {
