@@ -182,10 +182,14 @@ local function git_info()
     { utils.spawn,     "git",             { "status", "-s" } },
   })
   branch = branch:match("ref: refs/heads/([^\n\r%s]+)")
-  local unpulled, unpushed = utils.await_all({
-    { utils.spawn, "git", { "rev-list", "--count", "HEAD..origin/" .. branch } },
-    { utils.spawn, "git", { "rev-list", "--count", "origin/" .. branch .. "..HEAD" } }
-  })
+  local upstream = utils.spawn("git", { "rev-parse", "--abbrev-ref", branch .. "@{upstream}" }):gsub("%s+$", "")
+  local unpulled, unpushed = 0, 0
+  if upstream ~= "" then
+    unpulled, unpushed = utils.await_all({
+      { utils.spawn, "git", { "rev-list", "--count", "HEAD.." .. upstream } },
+      { utils.spawn, "git", { "rev-list", "--count", upstream .. "..HEAD" } }
+    })
+  end
 
   if branch then branch = "  " .. branch end
 
