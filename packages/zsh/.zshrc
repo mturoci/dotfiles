@@ -100,3 +100,6 @@ if [ -f '/Users/mturoci/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/m
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# k3s
+export KUBECONFIG=~/.kube/config
