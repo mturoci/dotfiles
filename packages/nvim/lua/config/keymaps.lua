@@ -100,18 +100,30 @@ require("gitsigns").setup({
 		end
 
 		-- Navigation.
+		local function center_on_next_move()
+			local id = vim.api.nvim_create_autocmd("CursorMoved", {
+				once = true,
+				callback = function()
+					vim.cmd("normal! zz")
+				end,
+			})
+			vim.defer_fn(function()
+				pcall(vim.api.nvim_del_autocmd, id)
+			end, 200)
+		end
+
 		map("n", "<C-h>", function()
 			vim.schedule(function()
+				center_on_next_move()
 				gs.next_hunk()
-				vim.cmd("normal! zz")
 			end)
 			return "<Ignore>"
 		end, { expr = true })
 
 		map("n", "<S-h>", function()
 			vim.schedule(function()
+				center_on_next_move()
 				gs.prev_hunk()
-				vim.cmd("normal! zz")
 			end)
 			return "<Ignore>"
 		end, { expr = true })
