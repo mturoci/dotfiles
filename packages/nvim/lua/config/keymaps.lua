@@ -103,6 +103,7 @@ require("gitsigns").setup({
 		map("n", "<C-h>", function()
 			vim.schedule(function()
 				gs.next_hunk()
+				vim.cmd("normal! zz")
 			end)
 			return "<Ignore>"
 		end, { expr = true })
@@ -110,6 +111,7 @@ require("gitsigns").setup({
 		map("n", "<S-h>", function()
 			vim.schedule(function()
 				gs.prev_hunk()
+				vim.cmd("normal! zz")
 			end)
 			return "<Ignore>"
 		end, { expr = true })
