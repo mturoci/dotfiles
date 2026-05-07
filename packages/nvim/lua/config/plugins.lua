@@ -68,7 +68,7 @@ return {
 			},
 		},
 	},
-	{ "soulsam480/nvim-oxlint", opts = {} },
+	-- { "soulsam480/nvim-oxlint", opts = {} },
 	{
 		"theHamsta/nvim-dap-virtual-text",
 		config = function()
