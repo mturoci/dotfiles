@@ -103,3 +103,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # k3s
 export KUBECONFIG=~/.kube/config
+export MANPAGER='nvim +Man!'
+
+export WASMTIME_HOME="$HOME/Downloads/RunningLinuxInAVirtualMachine/.build-wasm/.wasmtime"
+
+export PATH="$WASMTIME_HOME/bin:$PATH"
