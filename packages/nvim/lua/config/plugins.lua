@@ -242,7 +242,7 @@ return {
 						find_command = {
 							"sh",
 							"-c",
-							"{ rg --files --hidden -g '!**/.git/*'; rg --files --hidden -g '**/.env*'; } | awk '!seen[$0]++'",
+							"{ rg --files --hidden -g '!**/.git/*'; rg --files --hidden --no-ignore -g '**/.env' -g '**/.env.*'; } | awk '!seen[$0]++'",
 						},
 					},
 					live_grep = {
