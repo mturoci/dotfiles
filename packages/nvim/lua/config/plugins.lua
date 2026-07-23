@@ -239,7 +239,7 @@ return {
 			require("telescope").setup({
 				pickers = {
 					find_files = {
-						find_command = { "rg", "--files", "--hidden", "-g", "!**/.git/*" },
+						find_command = { "rg", "--files", "--hidden", "-g", "!**/.git/*", "-g", "**/.env", "-g", "**/.env.*" },
 					},
 					live_grep = {
 						additional_args = function(_)
