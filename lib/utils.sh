@@ -46,6 +46,8 @@ detect_os() {
                 . /etc/os-release
                 if [ "$ID" = "ubuntu" ] || [ "$ID" = "debian" ]; then
                     echo "ubuntu"
+                elif [ "$ID" = "arch" ] || [ "$ID_LIKE" = "arch" ]; then
+                    echo "arch"
                 else
                     echo "unknown-linux"
                 fi

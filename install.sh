@@ -129,7 +129,7 @@ main() {
     info "Packages to install: ${COMPONENTS[*]}"
 
     if [ "$OS" = "unknown" ] || [ "$OS" = "unknown-linux" ]; then
-        error "Unsupported operating system. Only macOS and Ubuntu are supported."
+        error "Unsupported operating system. Only macOS, Ubuntu and Arch Linux are supported."
         exit 1
     fi
 
