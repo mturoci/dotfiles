@@ -202,7 +202,6 @@ M.my_git_status = function(opts)
 		})
 	end
 
-	local entries = {}
 	local function create_finder()
 		local files, _ = get_git_files()
 		if #files == 0 then
@@ -219,14 +218,12 @@ M.my_git_status = function(opts)
 		return finders.new_table({
 			results = files,
 			entry_maker = function(entry)
-				local e = {
+				return {
 					value = entry,
 					display = make_display,
 					filename = entry.abs_path,
 					ordinal = entry.abs_path,
 				}
-				table.insert(entries, e)
-				return e
 			end,
 		})
 	end
@@ -256,6 +253,8 @@ M.my_git_status = function(opts)
 			return ""
 		end,
 		initial_mode = "normal",
+		-- Keep the cursor on the same row after staging/unstaging refreshes the list.
+		selection_strategy = "row",
 		finder = finder,
 		previewer = previewers.new_termopen_previewer({
 			get_command = function(entry)
@@ -311,29 +310,14 @@ M.my_git_status = function(opts)
 					return
 				end
 
-				local selected_idx = 1
-				for i, e in ipairs(entries) do
-					if e.filename == entry.filename then
-						selected_idx = i
-						break
-					end
-				end
-
 				if entry.value.is_staged then
 					vim.fn.system("git reset HEAD " .. vim.fn.shellescape(entry.value.filename))
 				else
 					vim.fn.system("git add " .. vim.fn.shellescape(entry.value.filename))
 				end
 
-				if not refresh(prompt_bufnr) then
-					return
-				end
-
-				vim.defer_fn(function()
-					for _ = 1, selected_idx - 1, 1 do
-						actions.move_selection_next(prompt_bufnr)
-					end
-				end, 1)
+				-- `selection_strategy = "row"` keeps the cursor in place across the refresh.
+				refresh(prompt_bufnr)
 			end)
 
 			map({ "n" }, "<M-u>", function()
