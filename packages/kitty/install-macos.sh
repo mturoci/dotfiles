@@ -36,6 +36,7 @@ setup_kitty_config() {
     # Create symlinks for kitty configs
     create_symlink "$SCRIPT_DIR/kitty.conf" "$HOME/.config/kitty/kitty.conf"
     create_symlink "$SCRIPT_DIR/current-theme.conf" "$HOME/.config/kitty/current-theme.conf"
+    create_symlink "$SCRIPT_DIR/ssh.conf" "$HOME/.config/kitty/ssh.conf"
 
     info "Kitty configuration complete!"
 }
