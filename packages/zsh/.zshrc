@@ -30,14 +30,6 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-
-# OpenMP stuff - More info at https://scikit-learn.org/dev/developers/advanced_installation.html#macos
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
-export SKLEARN_NO_OPENMP=TRUE
-export MACOSX_DEPLOYMENT_TARGET="10.14"
-
 # Remove custom name@name
 export DEFAULT_USER="$(whoami)"
 
