@@ -29,6 +29,34 @@ return {
 		"mfussenegger/nvim-dap",
 		dependencies = {
 			{
+				"leoluz/nvim-dap-go",
+				ft = "go",
+				config = function()
+					require("dap-go").setup()
+
+					-- Connect to a headless `dlv --listen=:2345`, for when the process has to
+					-- run under sudo or should outlive the nvim session.
+					local dap = require("dap")
+					dap.adapters.go_remote = { type = "server", host = "127.0.0.1", port = 2345 }
+					table.insert(dap.configurations.go, {
+						type = "go_remote",
+						name = "Connect to headless dlv (:2345)",
+						request = "attach",
+						mode = "remote",
+					})
+				end,
+			},
+			{
+				"jay-babu/mason-nvim-dap.nvim",
+				config = function()
+					require("mason-nvim-dap").setup({
+						ensure_installed = { "delve" },
+						-- Only used as an installer, nvim-dap-go owns the Go adapter and configurations.
+						handlers = { delve = function() end },
+					})
+				end,
+			},
+			{
 				"mxsdev/nvim-dap-vscode-js",
 				config = require("config.debug").setup_debug,
 			},
@@ -46,7 +74,7 @@ return {
 			},
 			{
 				"rcarriga/nvim-dap-ui",
-				dependencies = { "nvim-neotest/nvim-nio", "jay-babu/mason-nvim-dap.nvim" },
+				dependencies = { "nvim-neotest/nvim-nio" },
 				config = function()
 					local ui = require("dapui")
 					local dap = require("dap")
