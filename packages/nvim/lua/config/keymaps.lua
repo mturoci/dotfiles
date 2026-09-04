@@ -56,6 +56,26 @@ keymap("n", "]q", ":cnext<CR>zz:redraw!<CR>", silent)
 keymap("n", "[q", ":cprev<CR>zz:redraw!<CR>", silent)
 keymap("n", "<leader>tf", functions.toggle_format_on_save, {})
 
+-- Centers the view after a jump. Telescope jumps asynchronously, so we have to wait
+-- until the cursor lands in a file window.
+local function center(jump)
+	return function()
+		vim.api.nvim_create_autocmd({ "CursorMoved", "BufWinEnter" }, {
+			group = vim.api.nvim_create_augroup("CenterAfterJump", { clear = true }),
+			callback = function()
+				if vim.bo.buftype ~= "" then -- Skip the picker.
+					return
+				end
+				vim.schedule(function()
+					vim.cmd("normal! zz")
+				end)
+				return true
+			end,
+		})
+		jump()
+	end
+end
+
 -- LSP.
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -64,10 +84,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- See `:help vim.lsp.*` for documentation on any of the below functions
 		local opts = { buffer = ev.buf }
 		keymap("n", "gD", vim.lsp.buf.declaration, opts)
-		keymap("n", "gd", builtin.lsp_definitions, opts)
+		keymap("n", "gd", center(builtin.lsp_definitions), opts)
 		keymap("n", "K", vim.lsp.buf.hover, opts)
 		keymap("n", "gi", builtin.lsp_implementations, opts)
-		keymap("n", "gu", functions.go_to_usages, opts)
+		keymap("n", "gu", center(functions.go_to_usages), opts)
 		keymap("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 		keymap("n", "<M-m>", vim.diagnostic.goto_prev, opts)
 		keymap("n", "<C-m>", vim.diagnostic.goto_next, opts)
