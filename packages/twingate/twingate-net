@@ -1,0 +1,128 @@
+#!/bin/zsh
+# Control the Twingate macOS client from the command line.
+set -u
+APP="$HOME/Applications/Twingate Toggle.app"
+APPLET="Twingate Toggle.app/Contents/MacOS/applet"
+SVC="Twingate"
+LOG="$HOME/.cache/twingate-net.log"
+MODE="$HOME/.cache/twingate-net.mode"
+TGLOG="$HOME/Library/Group Containers/6GX8KVTR9H.com.twingate/Logs/com.twingate.macos.txt"
+BROWSER_HISTORY="$HOME/Library/Application Support/BraveSoftware/Brave-Browser/Default/History"
+
+st() { scutil --nc status "$SVC" 2>/dev/null | head -1 }
+
+# "open" is a no-op while the applet is still running, which would silently
+# skip the requested action, so wait for any previous run to exit first.
+wait_idle() {
+  local i
+  for i in {1..60}; do
+    pgrep -qf "$APPLET" || return 0
+    sleep 0.5
+  done
+  print -u2 "previous run still active"
+  return 1
+}
+
+# The applet reads its mode from a file, so always set it before launching.
+run_app() {
+  wait_idle || return 1
+  mkdir -p "${MODE:h}"
+  printf '%s' "$1" > "$MODE"
+  : > "$LOG"
+  open -g -a "$APP"
+}
+
+# Wait for the applet to write one of its terminal log lines.
+await_app() {
+  local i
+  for i in {1..$((${1:-25} * 5))}; do
+    grep -qE '^(DONE|ERROR)' "$LOG" 2>/dev/null && return 0
+    sleep 0.2
+  done
+  print -u2 "applet did not finish; see: twingate-net log"
+  return 1
+}
+
+# Poll until the VPN status matches $1, up to $2 seconds.
+await() {
+  local want=$1 secs=$2 i
+  for i in {1..$((secs * 2))}; do
+    [[ "$(st)" == "$want" ]] && { echo "$want"; return 0 }
+    sleep 0.5
+  done
+  echo "timeout: still $(st)" >&2
+  return 1
+}
+
+read_expiry() {
+  run_app expiry && await_app || return 1
+  grep -q '^ERROR' "$LOG" 2>/dev/null && { grep '^ERROR' "$LOG" >&2; return 1 }
+  grep -oE 'Auth expires in [^]]*' "$LOG" 2>/dev/null | head -1
+}
+
+# Twingate logs nothing when a resource reauth completes, so the only ground
+# truth is the browser reaching Twingate's OAuth callback. Best effort: needs a
+# Chromium-family default browser. Returns 2 if it cannot tell.
+confirm_callback() {
+  local since=$1 dir n
+  [[ -r "$BROWSER_HISTORY" ]] || return 2
+  dir=$(mktemp -d) || return 2
+  cp "$BROWSER_HISTORY"* "$dir/" 2>/dev/null
+  n=$(sqlite3 "$dir/${BROWSER_HISTORY:t}" "select count(*) from visits v
+        join urls u on u.id = v.url
+        where u.url like 'https://oauth.twingate.com/callback%'
+          and v.visit_time / 1000000 - 11644473600 >= $since;" 2>/dev/null)
+  rm -rf "$dir"
+  [[ -z "${n:-}" ]] && return 2
+  (( n > 0 ))
+}
+
+do_renew() {
+  local off t0 url i rc
+  off=$(stat -f%z "$TGLOG" 2>/dev/null || echo 0)
+  t0=$(date +%s)
+
+  run_app renew && await_app || return 1
+  grep -E '^(resource|ERROR)' "$LOG" 2>/dev/null
+  grep -q '^ERROR' "$LOG" 2>/dev/null && return 1
+
+  # Twingate's browser broker creates the reauth tab without committing the
+  # navigation, so open the URL ourselves; that actually issues the request.
+  for i in {1..24}; do
+    url=$(tail -c +$((off + 1)) "$TGLOG" 2>/dev/null \
+          | sed -nE 's|^.*Received reauth request: (https://[^[:space:]]+).*$|\1|p' | tail -1)
+    [[ -n "${url:-}" ]] && break
+    sleep 0.5
+  done
+  [[ -z "${url:-}" ]] && { echo "no reauth URL emitted; nothing to renew"; return 0 }
+  echo "opening ${url%%\?*}?…"
+  open "$url"
+
+  for i in {1..30}; do
+    confirm_callback "$t0"; rc=$?
+    (( rc == 0 )) && { echo "renewed: browser completed Twingate's OAuth callback"; return 0 }
+    (( rc == 2 )) && { echo "auth URL opened (cannot auto-verify: no readable Chromium history)"; return 0 }
+    sleep 1
+  done
+  print -u2 "auth URL opened but no OAuth callback seen in 30s; check the browser tab"
+  return 1
+}
+
+case "${1:-status}" in
+  status) st ;;
+  connect)
+    [[ "$(st)" == "Connected" ]] && { echo "Connected"; exit 0 }
+    run_app "" && await Connected "${2:-45}" ;;
+  disconnect)
+    [[ "$(st)" == "Disconnected" ]] && { echo "Disconnected"; exit 0 }
+    run_app "" && await Disconnected "${2:-20}" ;;
+  toggle) run_app "" && await_app ;;
+  renew)
+    [[ "$(st)" != "Connected" ]] && { print -u2 "not connected: $(st)"; exit 1 }
+    do_renew ;;
+  auth)
+    [[ "$(st)" != "Connected" ]] && { print -u2 "not connected: $(st)"; exit 1 }
+    read_expiry || echo "unknown" ;;
+  log) tail -n 30 "$LOG" 2>/dev/null || echo "no log yet" ;;
+  *) print -u2 "usage: twingate-net {status|connect|disconnect|toggle|renew|auth|log}"; exit 2 ;;
+esac
