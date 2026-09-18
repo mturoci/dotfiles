@@ -100,3 +100,11 @@ export MANPAGER='nvim +Man!'
 export WASMTIME_HOME="$HOME/Downloads/RunningLinuxInAVirtualMachine/.build-wasm/.wasmtime"
 
 export PATH="$WASMTIME_HOME/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/home/ubuntu/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
