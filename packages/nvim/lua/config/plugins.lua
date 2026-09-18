@@ -352,6 +352,8 @@ return {
 					"json",
 					"markdown",
 					"tsx",
+					"helm",
+					"yaml",
 				},
 				sync_install = false,
 				highlight = { enable = true },

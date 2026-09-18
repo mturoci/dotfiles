@@ -1,5 +1,15 @@
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+-- helm-ls only activates on the `helm`/`gotmpl` filetypes, but Helm chart
+-- templates are detected as plain yaml by default. Fix detection so the
+-- server (and template-aware highlighting) kicks in.
+vim.filetype.add({
+  pattern = {
+    [".*/templates/.*%.ya?ml"] = "helm",
+    [".*/templates/.*%.tpl"] = "helm",
+  },
+})
+
 vim.diagnostic.config({
   virtual_text = true,
   float = { border = "rounded" }
@@ -25,6 +35,17 @@ require("mason-lspconfig").setup({
     end,
     ["lua_ls"] = function()
       require("lspconfig").lua_ls.setup({ capabilities = capabilities })
+    end,
+    ["helm_ls"] = function()
+      require("lspconfig").helm_ls.setup({
+        capabilities = capabilities,
+        settings = {
+          ["helm-ls"] = {
+            yamllint = { enabled = true },
+            valuesFiles = { "values.yaml" },
+          },
+        },
+      })
     end,
     ["tsgo"] = {
       cmd = { "tsgo", "--lsp", "--stdio" },
