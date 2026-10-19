@@ -124,6 +124,47 @@ local highlights = {
 	yamlFlowIndicator = { fg = colors.text },
 }
 
+-- Diffview diff windows remap DiffAdd/DiffDelete/... to these groups via winhl, so the global fg-only
+-- Diff* colors stay untouched elsewhere while diffview gets subtle background tints that keep syntax colors.
+local diffview_highlights = {
+	-- Same green block background as diplomat.nvim conflict highlights.
+	DiffviewDiffAdd = { bg = colors.dark_primary },
+	DiffviewDiffAddAsDelete = { bg = "#4D3939" },
+	DiffviewDiffChange = { bg = "#343a31" },
+	DiffviewDiffText = { bg = colors.dark_primary },
+	DiffviewDiffDelete = { fg = colors.background_light },
+	DiffviewDiffDeleteDim = { fg = colors.background_light },
+	DiffviewFilePanelTitle = { fg = colors.primary, bold = true },
+	DiffviewFilePanelCounter = { fg = colors.light_brown, bold = true },
+	DiffviewFilePanelSelected = { fg = colors.warn },
+	DiffviewFilePanelPath = { fg = colors.gray },
+	DiffviewFilePanelInsertions = { fg = colors.success },
+	DiffviewFilePanelDeletions = { fg = colors.err },
+	DiffviewHash = { fg = colors.light_brown },
+	DiffviewReference = { fg = colors.primary },
+	DiffviewDim1 = { fg = colors.gray },
+	DiffviewPrimary = { fg = colors.primary },
+	DiffviewSecondary = { fg = colors.green },
+	DiffviewStatusAdded = { fg = colors.success },
+	DiffviewStatusUntracked = { fg = colors.success },
+	DiffviewStatusModified = { fg = colors.warn },
+	DiffviewStatusRenamed = { fg = colors.warn },
+	DiffviewStatusDeleted = { fg = colors.err },
+	DiffviewWinSeparator = { fg = colors.light_gray },
+}
+
 for group, attr in pairs(highlights) do
 	vim.api.nvim_set_hl(0, group, attr)
 end
+
+local M = {}
+
+function M.apply_diffview()
+	for group, attr in pairs(diffview_highlights) do
+		vim.api.nvim_set_hl(0, group, attr)
+	end
+end
+
+M.apply_diffview()
+
+return M

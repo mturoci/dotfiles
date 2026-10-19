@@ -16,6 +16,63 @@ return {
 	},
 	{ "williamboman/mason.nvim" },
 	{
+		"sindrets/diffview.nvim",
+		cmd = { "DiffviewFileHistory", "DiffviewClose" },
+		config = function()
+			require("diffview").setup({
+				enhanced_diff_hl = true,
+				show_help_hints = false,
+				view = {
+					file_history = { layout = "diff2_horizontal", winbar_info = true },
+				},
+				file_history_panel = {
+					win_config = { position = "bottom", height = 14 },
+				},
+			})
+			-- Diffview has no option for status signs, so swap the git status letters for icons on render.
+			-- Same glyphs as the git section of the statusline.
+			local status_icons = {
+				A = "", -- staged/added
+				M = "󰏫", T = "󰏫", -- changed
+				["?"] = "", -- untracked
+				U = "", -- conflict
+				D = "",
+				R = "", C = "",
+				["!"] = "",
+			}
+			local RenderComponent = require("diffview.renderer").RenderComponent
+			local add_text = RenderComponent.add_text
+			function RenderComponent:add_text(text, hl_group)
+				if hl_group and hl_group:find("^DiffviewStatus") then
+					text = text:gsub("^(%S)", status_icons)
+				end
+				return add_text(self, text, hl_group)
+			end
+
+			-- Quitting any diffview window closes the whole view. QuitPre only fires on user quits, not on
+			-- diffview's own window shuffling, and floats (help, commit log) are left alone.
+			local lib = require("diffview.lib")
+			vim.api.nvim_create_autocmd("QuitPre", {
+				group = vim.api.nvim_create_augroup("DiffviewAutoClose", { clear = true }),
+				callback = function()
+					local view = lib.get_current_view()
+					if not view or vim.api.nvim_win_get_config(0).relative ~= "" then
+						return
+					end
+					vim.schedule(function()
+						if vim.tbl_contains(lib.views, view) then
+							view:close()
+							lib.dispose_view(view)
+						end
+					end)
+				end,
+			})
+
+			-- Diffview links its groups with `default`, so re-apply our theme overrides after it loads.
+			require("config.appearance").apply_diffview()
+		end,
+	},
+	{
 		"ruifm/gitlinker.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
