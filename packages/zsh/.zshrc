@@ -10,6 +10,7 @@ fi
 
 # PATH configuration
 export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOPATH/bin:/usr/local/anaconda3/bin:/opt/homebrew/bin
 export PATH=$PATH:$HOME/bin/bin
 export PATH=$PATH:$HOME/Downloads/zig-macos-x86_64-0.14.0-dev.3271+bd237bced
