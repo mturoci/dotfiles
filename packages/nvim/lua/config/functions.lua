@@ -228,6 +228,9 @@ M.my_git_status = function(opts)
 		})
 	end
 
+	-- Results window view to restore once a refresh completes.
+	local saved_view
+
 	local function refresh(prompt_bufnr)
 		local new_finder = create_finder()
 		if not new_finder then
@@ -235,7 +238,9 @@ M.my_git_status = function(opts)
 			illuminate.toggle()
 			return false
 		end
-		action_state.get_current_picker(prompt_bufnr):refresh(new_finder, { reset_prompt = false })
+		local current_picker = action_state.get_current_picker(prompt_bufnr)
+		saved_view = vim.api.nvim_win_call(current_picker.results_win, vim.fn.winsaveview)
+		current_picker:refresh(new_finder, { reset_prompt = false })
 		return true
 	end
 
@@ -368,6 +373,18 @@ M.my_git_status = function(opts)
 			return true
 		end,
 	})
+
+	-- Telescope jumps the results window to the top after every refresh, restore the previous scroll instead.
+	picker:register_completion_callback(function(p)
+		if not saved_view or not vim.api.nvim_win_is_valid(p.results_win) then
+			return
+		end
+		local topline = saved_view.topline
+		saved_view = nil
+		vim.api.nvim_win_call(p.results_win, function()
+			vim.fn.winrestview({ topline = topline, lnum = p:get_selection_row() + 1, col = 0 })
+		end)
+	end)
 
 	illuminate.toggle()
 	picker:find()
