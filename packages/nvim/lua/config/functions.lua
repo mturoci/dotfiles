@@ -46,9 +46,21 @@ local function git_show(object)
 	return vim.fn.systemlist({ "git", "show", object })
 end
 
--- Overlay the changes against `base` on top of `bufnr`.
-local function show_changes(bufnr, base)
+-- Overlay the changes against `base` on top of `bufnr`, `on_ready` runs once the hunks are computed.
+local function show_changes(bufnr, base, on_ready)
 	local minidiff = require("mini.diff")
+	api.nvim_create_autocmd("User", {
+		pattern = "MiniDiffUpdated",
+		callback = function(args)
+			if not api.nvim_buf_is_valid(bufnr) then
+				return true
+			end
+			if args.buf == bufnr then
+				on_ready()
+				return true
+			end
+		end,
+	})
 	minidiff.set_ref_text(bufnr, base)
 	minidiff.toggle_overlay(bufnr)
 end
@@ -330,7 +342,7 @@ M.my_git_status = function(opts)
 	})
 
 	local file_previewer = previewers.new_buffer_previewer({
-		define_preview = function(self, entry)
+		define_preview = function(self, entry, status)
 			local value = entry.value
 			local file_status = value.is_staged and value.staged_status or value.unstaged_status
 			if not value.is_staged and file_status ~= "M" then
@@ -348,18 +360,38 @@ M.my_git_status = function(opts)
 
 			if file_status == "M" then
 				local base = git_show((value.is_staged and "HEAD:./" or ":./") .. value.filename)
-				show_changes(self.state.bufnr, base)
+				local bufnr = self.state.bufnr
+				show_changes(bufnr, base, function()
+					-- Start on the first change, unless another file got previewed in the meantime.
+					if api.nvim_win_is_valid(status.preview_win) and api.nvim_win_get_buf(status.preview_win) == bufnr then
+						goto_preview_hunk(status.prompt_bufnr, "next")
+					end
+				end)
 			end
 		end,
 	})
 
+	local preview_timer
+
 	-- Show new, modified and conflicted files as nvim buffers (changes marked on top), delta covers the rest.
 	local previewer = previewers.Previewer:new({
 		preview_fn = function(self, entry, status)
-			local file_status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
-			local use_buffer = file_status == "A" or file_status == "?" or file_status == "M" or file_status == "U"
-			self.state.current = use_buffer and file_previewer or diff_previewer
-			self.state.current:preview(entry, status)
+			local function render()
+				local file_status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
+				local use_buffer = file_status == "A" or file_status == "?" or file_status == "M" or file_status == "U"
+				self.state.current = use_buffer and file_previewer or diff_previewer
+				self.state.current:preview(entry, status)
+			end
+
+			-- Render the first preview right away, then wait for the selection to settle.
+			if not self.state.current then
+				render()
+				return
+			end
+			if preview_timer then
+				utils.clearTimeout(preview_timer)
+			end
+			preview_timer = utils.setTimeout(200, render)
 		end,
 		scroll_fn = function(self, direction)
 			if self.state then
@@ -367,6 +399,10 @@ M.my_git_status = function(opts)
 			end
 		end,
 		teardown = function()
+			if preview_timer then
+				utils.clearTimeout(preview_timer)
+				preview_timer = nil
+			end
 			file_previewer:teardown()
 			diff_previewer:teardown()
 		end,
