@@ -66,6 +66,7 @@ local highlights = {
 	TelescopeMatching = { fg = colors.primary },
 	TelescopeMultiSelection = { bg = colors.light_gray },
 	TelescopePreviewMatch = { bg = colors.dark_primary },
+	TelescopeResultsCommitHash = { fg = colors.primary },
 	Type = { fg = colors.cyan },
 	Visual = { bg = colors.dark_primary },
 	["@conditional.ternary"] = { fg = colors.text },
