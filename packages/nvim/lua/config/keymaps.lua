@@ -43,10 +43,6 @@ keymap("n", "<leader>gc", functions.my_git_status, {})
 keymap("n", "<leader>gbl", builtin.git_branches, {})
 keymap("n", "<leader>gbt", silent_shell("git checkout -"), {})
 
--- Diffview history.
-keymap("n", "<leader>gbh", "<cmd>DiffviewFileHistory<cr>", silent) -- Branch commits.
-keymap("n", "<leader>gfh", "<cmd>DiffviewFileHistory %<cr>", silent) -- Current file commits.
-
 -- Utils.
 keymap("n", "<C-l>", ":noh<CR>", silent) -- Clear search occurences highlights
 keymap("n", "<leader>e", ":Oil<CR>", silent)
