@@ -471,6 +471,10 @@ M.my_git_status = function(opts)
 		end)
 	end)
 
+	-- The prompt is the commit message, not a filter, so typing shouldn't re-run the finder and redraw
+	-- the results/preview. `refresh` still triggers it directly.
+	picker:_toggle_finder_attach()
+
 	illuminate.toggle()
 	picker:find()
 
