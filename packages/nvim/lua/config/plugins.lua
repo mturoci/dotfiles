@@ -143,6 +143,25 @@ return {
 		end,
 	},
 	{
+		-- Only draws the change overlay in the git status preview, gitsigns handles regular buffers.
+		"nvim-mini/mini.diff",
+		config = function()
+			local diff = require("mini.diff")
+			diff.setup({
+				source = diff.gen_source.none(),
+				mappings = {
+					apply = "",
+					reset = "",
+					textobject = "",
+					goto_first = "",
+					goto_prev = "",
+					goto_next = "",
+					goto_last = "",
+				},
+			})
+		end,
+	},
+	{
 		"stevearc/conform.nvim",
 		lazy = true,
 		event = { "BufReadPre", "BufNewFile" }, -- to disable, comment this out

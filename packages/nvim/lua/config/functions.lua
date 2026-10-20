@@ -42,6 +42,49 @@ local function git_delta(args)
 	return vim.list_extend(cmd, args)
 end
 
+local function git_show(object)
+	return vim.fn.systemlist({ "git", "show", object })
+end
+
+-- Overlay the changes against `base` on top of `bufnr`.
+local function show_changes(bufnr, base)
+	local minidiff = require("mini.diff")
+	minidiff.set_ref_text(bufnr, base)
+	minidiff.toggle_overlay(bufnr)
+end
+
+-- Jump to the next/previous hunk in the preview, centered like <C-h>/<S-h> in regular buffers.
+local function goto_preview_hunk(prompt_bufnr, direction)
+	local minidiff = require("mini.diff")
+	local winid = action_state.get_current_picker(prompt_bufnr).preview_win
+	if not winid or not api.nvim_win_is_valid(winid) then
+		return
+	end
+	local bufnr = api.nvim_win_get_buf(winid)
+	-- Hunks are computed asynchronously, so they may not be ready right after the preview opens.
+	local data = minidiff.get_buf_data(bufnr)
+	if not data or #data.hunks == 0 then
+		return
+	end
+
+	api.nvim_win_call(winid, function()
+		-- The preview opens at the top, so the first jump should land on a hunk at line 1 too.
+		if direction == "next" and not vim.b.hunk_nav_started then
+			direction = "first"
+		end
+		vim.b.hunk_nav_started = true
+		minidiff.goto_hunk(direction, { wrap = vim.o.wrapscan })
+
+		local first = data.hunks[1]
+		if vim.fn.line(".") == 1 and first.buf_start <= 1 then
+			-- Old lines above line 1 are only visible as filler.
+			vim.fn.winrestview({ topline = 1, topfill = first.ref_count })
+		else
+			vim.cmd("normal! zz")
+		end
+	end)
+end
+
 local delta_bcommits = previewers.new_termopen_previewer({
 	get_command = function(entry)
 		return git_delta({ "diff", entry.value .. "^!", "--", entry.current_file })
@@ -288,26 +331,34 @@ M.my_git_status = function(opts)
 
 	local file_previewer = previewers.new_buffer_previewer({
 		define_preview = function(self, entry)
-			if entry.value.is_staged then
-				-- Show the staged content, the working tree version may have changed since.
-				local lines = vim.fn.systemlist({ "git", "show", ":./" .. entry.value.filename })
-				vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-				previewer_utils.highlighter(self.state.bufnr, previewer_utils.filetype_detect(entry.value.filename))
-			else
-				conf.buffer_previewer_maker(entry.value.abs_path, self.state.bufnr, {
+			local value = entry.value
+			local file_status = value.is_staged and value.staged_status or value.unstaged_status
+			if not value.is_staged and file_status ~= "M" then
+				conf.buffer_previewer_maker(value.abs_path, self.state.bufnr, {
 					bufname = self.state.bufname,
 					winid = self.state.winid,
 				})
+				return
+			end
+
+			-- Show the staged content for staged rows, the working tree version may have changed since.
+			local lines = value.is_staged and git_show(":./" .. value.filename) or vim.fn.readfile(value.abs_path)
+			vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+			previewer_utils.highlighter(self.state.bufnr, previewer_utils.filetype_detect(value.filename))
+
+			if file_status == "M" then
+				local base = git_show((value.is_staged and "HEAD:./" or ":./") .. value.filename)
+				show_changes(self.state.bufnr, base)
 			end
 		end,
 	})
 
-	-- New files are all additions, so show them as regular buffers with nvim highlighting instead of a diff.
+	-- Show new, modified and conflicted files as nvim buffers (changes marked on top), delta covers the rest.
 	local previewer = previewers.Previewer:new({
 		preview_fn = function(self, entry, status)
 			local file_status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
-			local is_new = file_status == "A" or file_status == "?"
-			self.state.current = is_new and file_previewer or diff_previewer
+			local use_buffer = file_status == "A" or file_status == "?" or file_status == "M" or file_status == "U"
+			self.state.current = use_buffer and file_previewer or diff_previewer
 			self.state.current:preview(entry, status)
 		end,
 		scroll_fn = function(self, direction)
@@ -349,6 +400,14 @@ M.my_git_status = function(opts)
 
 				-- `selection_strategy = "row"` keeps the cursor in place across the refresh.
 				refresh(prompt_bufnr)
+			end)
+
+			map({ "n" }, "<C-h>", function()
+				goto_preview_hunk(prompt_bufnr, "next")
+			end)
+
+			map({ "n" }, "<S-h>", function()
+				goto_preview_hunk(prompt_bufnr, "prev")
 			end)
 
 			map({ "n" }, "<M-u>", function()
