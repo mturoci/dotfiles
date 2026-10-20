@@ -258,6 +258,7 @@ M.my_git_status = function(opts)
 			return ""
 		end,
 		initial_mode = "normal",
+		layout_config = { width = { padding = 0 }, height = { padding = 0 } },
 		-- Keep the cursor on the same row after staging/unstaging refreshes the list.
 		selection_strategy = "row",
 		finder = finder,
