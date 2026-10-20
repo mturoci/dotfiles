@@ -12,27 +12,7 @@ vim.diagnostic.config({
 	},
 })
 
-local colors = {
-	background = "#2C2B2A",
-	background_light = "#3b3938",
-	dark_green = "#A4BC92",
-	dark_primary = "#3A4D39",
-	dark_yellow = "#DDFFBB",
-	err = "#D37676",
-	gray = "#908caa",
-	green = "#6a8759",
-	info = "#E1AFD1",
-	light_brown = "#ECE3A1",
-	light_gray = "#3a3a3a",
-	light_primary = "#c2d69a",
-	none = "NONE",
-	primary = "#a7c080",
-	cyan = "#839e60",
-	success = "#A5DD9B",
-	blue = "#5382ab",
-	text = "#bfbed1",
-	warn = "#F6F193",
-}
+local colors = require("config.colors")
 
 local highlights = {
 	Boolean = { fg = colors.err },
@@ -126,4 +106,29 @@ local highlights = {
 
 for group, attr in pairs(highlights) do
 	vim.api.nvim_set_hl(0, group, attr)
+end
+
+-- ANSI palette for terminal buffers. Delta's "base16" syntax theme paints code with these,
+-- so slots are picked to match the highlights above: 2 strings, 3 types, 4 functions,
+-- 5 keywords, 6 support/regex, 7 and 15 text, 8 comments, 9 constants.
+local terminal_colors = {
+	colors.background,
+	colors.err,
+	colors.green,
+	colors.light_primary,
+	colors.primary,
+	colors.green,
+	colors.cyan,
+	colors.text,
+	colors.gray,
+	colors.err,
+	colors.success,
+	colors.warn,
+	colors.blue,
+	colors.info,
+	colors.cyan,
+	colors.text,
+}
+for i, color in ipairs(terminal_colors) do
+	vim.g["terminal_color_" .. (i - 1)] = color
 end

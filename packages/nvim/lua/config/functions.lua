@@ -13,26 +13,43 @@ local action_state = require("telescope.actions.state")
 local entry_display = require("telescope.pickers.entry_display")
 local statusline = require("config.statusline")
 local utils = require("config.utils")
+local colors = require("config.colors")
+
+-- Delta settings matching the nvim theme. Syntax colors come from the terminal palette set in appearance.lua.
+local delta_config = {
+	["core.pager"] = "delta",
+	["delta.side-by-side"] = "false",
+	["delta.syntax-theme"] = "base16",
+	["delta.plus-style"] = "syntax " .. colors.diff_add_bg,
+	["delta.plus-emph-style"] = "syntax " .. colors.dark_primary,
+	["delta.minus-style"] = "syntax " .. colors.diff_delete_bg,
+	["delta.minus-emph-style"] = "syntax " .. colors.diff_delete_emph_bg,
+	["delta.file-style"] = colors.primary,
+	["delta.file-decoration-style"] = colors.primary .. " ul",
+	["delta.hunk-header-style"] = "file line-number syntax",
+	["delta.hunk-header-file-style"] = colors.light_primary,
+	["delta.hunk-header-line-number-style"] = colors.gray,
+	["delta.hunk-header-decoration-style"] = colors.gray .. " box",
+}
+
+-- Build a `git <args>` command piped through themed delta.
+local function git_delta(args)
+	local cmd = { "git" }
+	for key, value in pairs(delta_config) do
+		vim.list_extend(cmd, { "-c", key .. "=" .. value })
+	end
+	return vim.list_extend(cmd, args)
+end
 
 local delta_bcommits = previewers.new_termopen_previewer({
 	get_command = function(entry)
-		return {
-			"git",
-			"-c",
-			"core.pager=delta",
-			"-c",
-			"delta.side-by-side=false",
-			"diff",
-			entry.value .. "^!",
-			"--",
-			entry.current_file,
-		}
+		return git_delta({ "diff", entry.value .. "^!", "--", entry.current_file })
 	end,
 })
 
 local delta = previewers.new_termopen_previewer({
 	get_command = function(entry)
-		return { "git", "-c", "core.pager=delta", "-c", "delta.side-by-side=false", "diff", entry.path }
+		return git_delta({ "diff", entry.path })
 	end,
 })
 
@@ -267,28 +284,8 @@ M.my_git_status = function(opts)
 				if entry.value.is_staged then
 					if entry.value.staged_status == "D" then
 						return { "echo", "The file was deleted." }
-					elseif entry.value.staged_status == "A" then
-						return {
-							"git",
-							"-c",
-							"core.pager=delta",
-							"-c",
-							"delta.side-by-side=false",
-							"diff",
-							"--staged",
-							entry.value.filename,
-						}
 					else
-						return {
-							"git",
-							"-c",
-							"core.pager=delta",
-							"-c",
-							"delta.side-by-side=false",
-							"diff",
-							"--staged",
-							entry.value.filename,
-						}
+						return git_delta({ "diff", "--staged", entry.value.filename })
 					end
 				else
 					if entry.value.unstaged_status == "D" then
@@ -296,15 +293,7 @@ M.my_git_status = function(opts)
 					elseif entry.value.unstaged_status == "?" then
 						return { "cat", entry.value.filename }
 					else
-						return {
-							"git",
-							"-c",
-							"core.pager=delta",
-							"-c",
-							"delta.side-by-side=false",
-							"diff",
-							entry.value.filename,
-						}
+						return git_delta({ "diff", entry.value.filename })
 					end
 				end
 			end,
