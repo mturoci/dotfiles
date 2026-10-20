@@ -11,6 +11,7 @@ local conf = require("telescope.config").values
 local telescope_utils = require("telescope.utils")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
+local action_set = require("telescope.actions.set")
 local entry_display = require("telescope.pickers.entry_display")
 local statusline = require("config.statusline")
 local utils = require("config.utils")
@@ -436,6 +437,15 @@ M.my_git_status = function(opts)
 
 				-- `selection_strategy = "row"` keeps the cursor in place across the refresh.
 				refresh(prompt_bufnr)
+			end)
+
+			-- Like j/k, but skip three entries at a time.
+			map({ "n" }, "J", function()
+				action_set.shift_selection(prompt_bufnr, 3)
+			end)
+
+			map({ "n" }, "K", function()
+				action_set.shift_selection(prompt_bufnr, -3)
 			end)
 
 			map({ "n" }, "<C-h>", function()
