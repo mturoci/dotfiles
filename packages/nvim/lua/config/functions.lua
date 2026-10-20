@@ -3,6 +3,7 @@ local api = vim.api
 local popup = require("plenary.popup")
 local illuminate = require("illuminate")
 local previewers = require("telescope.previewers")
+local previewer_utils = require("telescope.previewers.utils")
 local pickers = require("telescope.pickers")
 local builtin = require("telescope.builtin")
 local finders = require("telescope.finders")
@@ -267,6 +268,59 @@ M.my_git_status = function(opts)
 		return
 	end
 
+	local diff_previewer = previewers.new_termopen_previewer({
+		get_command = function(entry)
+			if entry.value.is_staged then
+				if entry.value.staged_status == "D" then
+					return { "echo", "The file was deleted." }
+				else
+					return git_delta({ "diff", "--staged", entry.value.filename })
+				end
+			else
+				if entry.value.unstaged_status == "D" then
+					return { "echo", "The file was deleted" }
+				else
+					return git_delta({ "diff", entry.value.filename })
+				end
+			end
+		end,
+	})
+
+	local file_previewer = previewers.new_buffer_previewer({
+		define_preview = function(self, entry)
+			if entry.value.is_staged then
+				-- Show the staged content, the working tree version may have changed since.
+				local lines = vim.fn.systemlist({ "git", "show", ":./" .. entry.value.filename })
+				vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+				previewer_utils.highlighter(self.state.bufnr, previewer_utils.filetype_detect(entry.value.filename))
+			else
+				conf.buffer_previewer_maker(entry.value.abs_path, self.state.bufnr, {
+					bufname = self.state.bufname,
+					winid = self.state.winid,
+				})
+			end
+		end,
+	})
+
+	-- New files are all additions, so show them as regular buffers with nvim highlighting instead of a diff.
+	local previewer = previewers.Previewer:new({
+		preview_fn = function(self, entry, status)
+			local file_status = entry.value.is_staged and entry.value.staged_status or entry.value.unstaged_status
+			local is_new = file_status == "A" or file_status == "?"
+			self.state.current = is_new and file_previewer or diff_previewer
+			self.state.current:preview(entry, status)
+		end,
+		scroll_fn = function(self, direction)
+			if self.state then
+				self.state.current:scroll_fn(direction)
+			end
+		end,
+		teardown = function()
+			file_previewer:teardown()
+			diff_previewer:teardown()
+		end,
+	})
+
 	local picker = pickers.new(opts or {}, {
 		prompt_title = "Git Status",
 		prompt_prefix = "",
@@ -279,25 +333,7 @@ M.my_git_status = function(opts)
 		-- Keep the cursor on the same row after staging/unstaging refreshes the list.
 		selection_strategy = "row",
 		finder = finder,
-		previewer = previewers.new_termopen_previewer({
-			get_command = function(entry)
-				if entry.value.is_staged then
-					if entry.value.staged_status == "D" then
-						return { "echo", "The file was deleted." }
-					else
-						return git_delta({ "diff", "--staged", entry.value.filename })
-					end
-				else
-					if entry.value.unstaged_status == "D" then
-						return { "echo", "The file was deleted" }
-					elseif entry.value.unstaged_status == "?" then
-						return { "cat", entry.value.filename }
-					else
-						return git_delta({ "diff", entry.value.filename })
-					end
-				end
-			end,
-		}),
+		previewer = previewer,
 		attach_mappings = function(prompt_bufnr, map)
 			map({ "n" }, "<tab>", function()
 				local entry = action_state.get_selected_entry(prompt_bufnr)
