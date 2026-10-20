@@ -110,7 +110,7 @@ end
 
 -- ANSI palette for terminal buffers. Delta's "base16" syntax theme paints code with these,
 -- so slots are picked to match the highlights above: 2 strings, 3 types, 4 functions,
--- 5 keywords, 6 support/regex, 7 and 15 text, 8 comments, 9 constants.
+-- 5 keywords, 6 support/regex, 7 and 15 text, 8 comments, 9 tag attributes (also numbers, booleans, null).
 local terminal_colors = {
 	colors.background,
 	colors.err,
@@ -121,7 +121,7 @@ local terminal_colors = {
 	colors.cyan,
 	colors.text,
 	colors.gray,
-	colors.err,
+	colors.light_brown,
 	colors.success,
 	colors.warn,
 	colors.blue,
