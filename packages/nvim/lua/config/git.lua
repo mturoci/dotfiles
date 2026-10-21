@@ -783,4 +783,9 @@ end
 
 M.commit = M.status
 
+-- Shared with the other tree pickers, e.g. tickets.
+M.refresh_picker = refresh_picker
+M.restore_view_after_refresh = restore_view_after_refresh
+M.map_navigation = map_navigation
+
 return M

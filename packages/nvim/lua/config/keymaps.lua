@@ -3,6 +3,7 @@ local silent = { silent = true }
 local builtin = require("telescope.builtin")
 local functions = require("config.functions")
 local git = require("config.git")
+local tickets = require("config.tickets")
 
 local silent_shell = function(cmd)
 	return Statusline_refresh_wrap(function()
@@ -44,6 +45,7 @@ keymap("n", "<leader>gc", git.status, {})
 keymap("n", "<leader>gl", git.commits, {})
 keymap("n", "<leader>gbl", builtin.git_branches, {})
 keymap("n", "<leader>gbt", silent_shell("git checkout -"), {})
+keymap("n", "<leader>tk", tickets.tickets, {})
 
 -- Utils.
 keymap("n", "<C-l>", ":noh<CR>", silent) -- Clear search occurences highlights
