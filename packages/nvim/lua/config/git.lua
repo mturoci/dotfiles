@@ -84,7 +84,7 @@ local function goto_preview_hunk(prompt_bufnr, direction)
 			direction = "first"
 		end
 		vim.b.hunk_nav_started = true
-		minidiff.goto_hunk(direction, { wrap = vim.o.wrapscan })
+		minidiff.goto_hunk(direction, { wrap = false })
 
 		local first = data.hunks[1]
 		if vim.fn.line(".") == 1 and first.buf_start <= 1 then
