@@ -2,6 +2,7 @@ local keymap = vim.keymap.set
 local silent = { silent = true }
 local builtin = require("telescope.builtin")
 local functions = require("config.functions")
+local git = require("config.git")
 
 local silent_shell = function(cmd)
 	return Statusline_refresh_wrap(function()
@@ -19,7 +20,7 @@ end
 keymap("n", "<leader>f", builtin.find_files, {})
 keymap("n", "<leader>s", builtin.live_grep, {})
 keymap("n", "<leader>hl", builtin.help_tags, {})
-keymap("n", "<leader>bc", functions.my_git_bcommits, {})
+keymap("n", "<leader>bc", git.bcommits, {})
 
 -- Window management.
 keymap("n", "<C-h>", "<C-w>h", silent)
@@ -39,7 +40,8 @@ keymap("n", "<leader>gpl", silent_shell("git pull"), {})
 keymap("n", "<leader>gps", silent_shell("git push"), {})
 keymap("n", "<leader>grh", silent_shell("git reset --hard"), {})
 keymap("n", "<leader>grs", silent_shell("git reset --soft HEAD~1"), {})
-keymap("n", "<leader>gc", functions.my_git_status, {})
+keymap("n", "<leader>gc", git.status, {})
+keymap("n", "<leader>gl", git.commits, {})
 keymap("n", "<leader>gbl", builtin.git_branches, {})
 keymap("n", "<leader>gbt", silent_shell("git checkout -"), {})
 

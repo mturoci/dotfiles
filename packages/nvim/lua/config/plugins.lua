@@ -149,6 +149,8 @@ return {
 			local diff = require("mini.diff")
 			diff.setup({
 				source = diff.gen_source.none(),
+				-- Keep changed blocks together instead of splitting them into interleaved removed/added line pairs.
+				options = { linematch = 0 },
 				mappings = {
 					apply = "",
 					reset = "",
