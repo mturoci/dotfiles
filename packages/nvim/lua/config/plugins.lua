@@ -333,6 +333,35 @@ return {
 		opts = {},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
+			-- Cache of gitignored entries per directory, filled lazily on first lookup.
+			local function new_git_ignored()
+				return setmetatable({}, {
+					__index = function(self, dir)
+						local result = vim.system(
+							{ "git", "ls-files", "--ignored", "--exclude-standard", "--others", "--directory" },
+							{ cwd = dir, text = true }
+						):wait()
+						local ignored = {}
+						if result.code == 0 then
+							for line in vim.gsplit(result.stdout, "\n", { plain = true, trimempty = true }) do
+								ignored[line:gsub("/$", "")] = true
+							end
+						end
+						rawset(self, dir, ignored)
+						return ignored
+					end,
+				})
+			end
+			local git_ignored = new_git_ignored()
+
+			-- Clear the cache on refresh so newly ignored/unignored files are picked up.
+			local refresh = require("oil.actions").refresh
+			local orig_refresh = refresh.callback
+			refresh.callback = function(...)
+				git_ignored = new_git_ignored()
+				orig_refresh(...)
+			end
+
 			require("oil").setup({
 				skip_confirm_for_simple_edits = true,
         columns = {
@@ -345,6 +374,11 @@ return {
 				},
 				view_options = {
 					show_hidden = true,
+					-- Grey out only gitignored files instead of every dotfile.
+					is_hidden_file = function(name, bufnr)
+						local dir = require("oil").get_current_dir(bufnr)
+						return dir ~= nil and git_ignored[dir][name] == true
+					end,
 				},
 				confirmation = {
 					border = "rounded",
