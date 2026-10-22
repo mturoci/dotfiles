@@ -503,11 +503,17 @@ M.commits = function(opts)
 		return
 	end
 
+	-- Commits not on any remote yet.
+	local unpushed = {}
+	for _, sha in ipairs(vim.fn.systemlist({ "git", "log", "--format=%h", "HEAD", "--not", "--remotes" })) do
+		unpushed[sha] = true
+	end
+
 	local commits = {}
 	for _, line in ipairs(vim.fn.systemlist({ "git", "log", "--format=%h%x09%an%x09%s" })) do
 		local sha, author, subject = line:match("^(%S+)\t([^\t]*)\t(.*)$")
 		if sha then
-			table.insert(commits, { sha = sha, author = author, subject = subject })
+			table.insert(commits, { sha = sha, author = author, subject = subject, unpushed = unpushed[sha] == true })
 		end
 	end
 	if #commits == 0 then
@@ -677,6 +683,36 @@ M.commits = function(opts)
 		vim.bo[bufnr].filetype = vim.filetype.match({ filename = file.path }) or ""
 	end
 
+	-- Draw a line between the unpushed commits and the pushed ones below them. Merges can interleave the two,
+	-- so there is a line above every pushed commit that follows an unpushed one.
+	local separator_ns = api.nvim_create_namespace("git_log_unpushed")
+	local function draw_unpushed_separator(picker)
+		local bufnr = picker.results_bufnr
+		if not api.nvim_buf_is_valid(bufnr) then
+			return
+		end
+		api.nvim_buf_clear_namespace(bufnr, separator_ns, 0, -1)
+
+		local line = string.rep("─", api.nvim_win_get_width(picker.results_win))
+		local line_count = api.nvim_buf_line_count(bufnr)
+		local after_unpushed = false
+		local index = 0
+		for entry in picker.manager:iter() do
+			index = index + 1
+			-- Expanded files belong to the commit above them.
+			if entry.kind == "commit" then
+				local row = picker:get_row(index)
+				if after_unpushed and not entry.value.unpushed and row < line_count then
+					api.nvim_buf_set_extmark(bufnr, separator_ns, row, 0, {
+						virt_lines = { { { line, "TelescopeBorder" } } },
+						virt_lines_above = true,
+					})
+				end
+				after_unpushed = entry.value.unpushed
+			end
+		end
+	end
+
 	local function set_title(picker)
 		picker.prompt_border:change_title(current_commit and ("Commit " .. current_commit) or "Git Log")
 	end
@@ -766,6 +802,7 @@ M.commits = function(opts)
 		end,
 	})
 
+	picker:register_completion_callback(draw_unpushed_separator)
 	restore_view_after_refresh(picker)
 	picker:find()
 end
