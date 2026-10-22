@@ -14,7 +14,16 @@
     "ralph-loop@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "codex@openai-codex": true
+  },
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
   },
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
