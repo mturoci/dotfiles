@@ -8,6 +8,9 @@ fi
 # Source .env file if it exists
 [[ -f ~/.env ]] && source ~/.env
 
+# Machine-specific config kept out of the repo
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
 # PATH configuration
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin

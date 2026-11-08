@@ -111,24 +111,6 @@ install_essentials_macos() {
     info "Essential tools installed successfully!"
 }
 
-setup_git_config() {
-    info "Setting up git configuration..."
-
-    if ! git config --global user.name &>/dev/null; then
-        git config --global user.name "Martin Turoci"
-    else
-        info "git user.name already configured: $(git config --global user.name)"
-    fi
-
-    if ! git config --global user.email &>/dev/null; then
-        git config --global user.email "you@example.com"
-    else
-        info "git user.email already configured: $(git config --global user.email)"
-    fi
-
-    info "Git configuration complete!"
-}
-
 setup_config_symlinks() {
     info "Setting up config file symlinks..."
 
