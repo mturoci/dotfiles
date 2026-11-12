@@ -1,0 +1,5 @@
+# Symlinked to ~/.ssh/rc; sshd runs it on every login.
+# Points a stable path at the current forwarded agent so long-lived tmux shells survive reconnects.
+if [ -S "$SSH_AUTH_SOCK" ]; then
+    ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"
+fi

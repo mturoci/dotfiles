@@ -112,3 +112,8 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
+
+# Load keychain-stored SSH keys at login so the agent isn't empty when forwarding before first local use.
+if [[ $OSTYPE == darwin* ]] && ! ssh-add -l &>/dev/null; then
+  ssh-add --apple-load-keychain -q 2>/dev/null
+fi

@@ -61,6 +61,9 @@ setup_tmux_config() {
 
     create_symlink "$SCRIPT_DIR/right_status.sh" "$HOME/.tmux/right_status.sh"
 
+    mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+    create_symlink "$SCRIPT_DIR/ssh_rc" "$HOME/.ssh/rc"
+
     install_tpm
 
     info "Tmux configuration complete!"
