@@ -121,12 +121,14 @@ setup_config_symlinks() {
         return
     fi
 
+    shopt -s dotglob nullglob
     for config_file in "$configs_dir"/*; do
         if [ -f "$config_file" ]; then
             local filename=$(basename "$config_file")
             create_symlink "$config_file" "$HOME/$filename"
         fi
     done
+    shopt -u dotglob nullglob
 
     info "Config symlinks setup complete!"
 }

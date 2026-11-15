@@ -22,8 +22,26 @@ install_essentials_arch() {
     fi
 
     # base-devel already covers most build tooling; the rest are Python build deps
-    # for asdf and general utilities.
-    local packages=(gzip tar unzip github-cli clang zlib bzip2 readline sqlite tk xz)
+    # for asdf, fonts, and general utilities.
+    local packages=(
+        git
+        curl
+        less
+        which
+        man-db
+        gzip
+        tar
+        unzip
+        github-cli
+        clang
+        zlib
+        bzip2
+        readline
+        sqlite
+        tk
+        xz
+        ttf-jetbrains-mono-nerd
+    )
 
     for pkg in "${packages[@]}"; do
         if ! pkg_installed "$pkg"; then
@@ -34,9 +52,24 @@ install_essentials_arch() {
         fi
     done
 
+    install_yay
+
     info "Essential tools installed successfully!"
 }
 
+install_yay() {
+    if ! command_exists yay; then
+        info "Installing yay (AUR helper)..."
+        local temp_dir
+        temp_dir=$(mktemp -d)
+        git clone https://aur.archlinux.org/yay-bin.git "$temp_dir"
+        (cd "$temp_dir" && makepkg -si --noconfirm)
+        rm -rf "$temp_dir"
+        info "yay installed successfully!"
+    else
+        info "yay already installed"
+    fi
+}
 setup_config_symlinks() {
     info "Setting up config file symlinks..."
 
@@ -47,12 +80,14 @@ setup_config_symlinks() {
         return
     fi
 
+    shopt -s dotglob nullglob
     for config_file in "$configs_dir"/*; do
         if [ -f "$config_file" ]; then
             local filename=$(basename "$config_file")
             create_symlink "$config_file" "$HOME/$filename"
         fi
     done
+    shopt -u dotglob nullglob
 
     info "Config symlinks setup complete!"
 }
