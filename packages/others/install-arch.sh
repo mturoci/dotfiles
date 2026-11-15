@@ -12,6 +12,11 @@ setup_configs() {
 
     create_symlink "$SCRIPT_DIR/.markdownlint.json" "$HOME/.markdownlint.json"
 
+    if [ -f "$SCRIPT_DIR/brave-flags.conf" ]; then
+        mkdir -p "$HOME/.config"
+        create_symlink "$SCRIPT_DIR/brave-flags.conf" "$HOME/.config/brave-flags.conf"
+    fi
+
     info "Misc config setup complete!"
 }
 
