@@ -188,6 +188,10 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 bindsym $mod+b bar mode toggle
 
+# Assign applications to workspaces
+assign [class="kitty"] workspace number $ws1
+assign [class="Brave"] workspace number $ws2
+
 default_border none
 default_floating_border none
 
