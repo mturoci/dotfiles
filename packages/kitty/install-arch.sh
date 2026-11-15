@@ -18,6 +18,13 @@ install_kitty_arch() {
     else
         info "Kitty already installed"
     fi
+
+    if ! pacman -Qi ttf-jetbrains-mono-nerd >/dev/null 2>&1; then
+        info "Installing JetBrains Mono Nerd Font via pacman..."
+        sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd
+    else
+        info "JetBrains Mono Nerd Font already installed"
+    fi
 }
 
 setup_kitty_config() {
