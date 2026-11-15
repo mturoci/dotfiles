@@ -17,6 +17,7 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOPATH/bin:/usr/local/anaconda3/bin:/opt/homebrew/bin
 export PATH=$PATH:$HOME/bin/bin
 export PATH=$PATH:$HOME/Downloads/zig-macos-x86_64-0.14.0-dev.3271+bd237bced
+
 ZSH_DISABLE_COMPFIX=true
 
 # Path to your oh-my-zsh installation.
@@ -117,3 +118,10 @@ esac
 if [[ $OSTYPE == darwin* ]] && ! ssh-add -l &>/dev/null; then
   ssh-add --apple-load-keychain -q 2>/dev/null
 fi
+
+if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
+  exec startx
+fi
+
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"

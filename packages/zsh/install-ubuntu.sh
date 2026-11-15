@@ -60,10 +60,17 @@ setup_zsh_config() {
     create_symlink "$DOTFILES_DIR/.env" "$HOME/.env"
 
     # Set zsh as default shell if not already
+    local current_shell
+    current_shell=$(getent passwd "$USER" | cut -d: -f7)
     local zsh_path="$(which zsh)"
 
-    sudo chsh -s $(which zsh) $USER
-    info "✓ Default shell successfully changed to zsh!"
+    if [ "$current_shell" != "$zsh_path" ]; then
+        info "Setting zsh as default shell..."
+        sudo chsh -s "$zsh_path" "$USER"
+        info "✓ Default shell successfully changed to zsh!"
+    else
+        info "Default shell is already zsh"
+    fi
     
     info "Zsh configuration complete!"
 }
