@@ -146,6 +146,7 @@ main() {
     fi
     setup_git_config
     setup_config_symlinks
+    setup_brave_default_browser
 }
 
 main "$@"

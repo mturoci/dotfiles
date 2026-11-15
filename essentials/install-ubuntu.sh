@@ -120,6 +120,14 @@ install_essentials_ubuntu() {
         info "lzma already installed"
     fi
 
+
+
+    if ! dpkg -l | grep -q "^ii  gnome-keyring"; then
+        info "Installing gnome-keyring via apt..."
+        sudo apt-get install -y gnome-keyring
+    else
+        info "gnome-keyring already installed"
+    fi
     info "Essential tools installed successfully!"
 }
 
@@ -151,6 +159,7 @@ main() {
     fi
     setup_git_config
     setup_config_symlinks
+    setup_brave_default_browser
 }
 
 main "$@"

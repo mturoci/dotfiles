@@ -93,3 +93,28 @@ setup_pi_agent() {
 
     create_symlink "${script_dir}/AGENTS.md" "${PI_AGENT_DIR}/AGENTS.md"
 }
+
+setup_brave_default_browser() {
+    if ! command_exists brave; then
+        warn "Brave not found. Skipping default browser setup."
+        return
+    fi
+
+    # Find Brave's desktop file
+    if [ -f "/usr/share/applications/brave-browser.desktop" ]; then
+        local desktop_file="brave-browser.desktop"
+    elif [ -f "/usr/local/share/applications/brave-browser.desktop" ]; then
+        local desktop_file="brave-browser.desktop"
+    else
+        warn "Brave desktop file not found. Skipping default browser setup."
+        return
+    fi
+
+    info "Setting Brave as default browser for HTTP/HTTPS..."
+
+    xdg-mime default "$desktop_file" x-scheme-handler/http
+    xdg-mime default "$desktop_file" x-scheme-handler/https
+    xdg-mime default "$desktop_file" x-scheme-handler/ftp
+
+    info "Brave is now the default browser"
+}

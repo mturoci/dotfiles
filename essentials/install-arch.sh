@@ -42,6 +42,7 @@ install_essentials_arch() {
         tk
         xz
         ttf-jetbrains-mono-nerd
+        gnome-keyring
     )
 
     for pkg in "${packages[@]}"; do
@@ -99,6 +100,7 @@ main() {
     fi
     setup_git_config
     setup_config_symlinks
+    setup_brave_default_browser
 }
 
 main "$@"
