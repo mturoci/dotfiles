@@ -42,6 +42,11 @@ setup_xserver_config() {
     create_symlink "$SCRIPT_DIR/.xinitrc" "$HOME/.xinitrc"
     create_symlink "$SCRIPT_DIR/.Xresources" "$HOME/.Xresources"
 
+    if [ ! -f "$HOME/.Xresources.local" ]; then
+        info "Creating empty ~/.Xresources.local for machine-specific overrides..."
+        touch "$HOME/.Xresources.local"
+    fi
+
     if [ -f "$SCRIPT_DIR/00-keyboard.conf" ]; then
         if [ ! -f /etc/X11/xorg.conf.d/00-keyboard.conf ] || ! cmp -s "$SCRIPT_DIR/00-keyboard.conf" /etc/X11/xorg.conf.d/00-keyboard.conf; then
             info "Installing X11 keyboard configuration (caps:escape)..."

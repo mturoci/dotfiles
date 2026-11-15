@@ -53,7 +53,8 @@ fi
 
 export TERMINAL=kitty
 
-xrdb -merge ~/.Xresources
+[ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
+[ -f ~/.Xresources.local ] && xrdb -merge ~/.Xresources.local
 
 brightnessctl set 30%
 export XDG_CURRENT_DESKTOP=i3

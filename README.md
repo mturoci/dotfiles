@@ -82,7 +82,7 @@ cd ~/dotfiles
 ## Configuration Files
 
 - `xserver/.xinitrc` - X11 initialization (environment, HiDPI, launches i3)
-- `xserver/.Xresources` - X11 resource settings (DPI scaling)
+- `xserver/.Xresources` - X11 resource settings (default 96 DPI; override via `~/.Xresources.local`)
 - `xserver/00-keyboard.conf` - Xorg keyboard configuration (Caps Lock -> Escape)
 - `i3/config` - i3 window manager configuration
 - `i3/i3status.conf` - i3status bar configuration
