@@ -40,11 +40,18 @@ setup_kitty_config() {
     info "Kitty configuration complete!"
 }
 
+setup_kitty_autostart() {
+    info "Setting up Kitty autostart..."
+    mkdir -p "$HOME/.config/autostart"
+    create_symlink "$SCRIPT_DIR/kitty.desktop" "$HOME/.config/autostart/kitty.desktop"
+}
+
 main() {
     if [ "$SKIP_PACKAGES" != "true" ]; then
         install_kitty_ubuntu
     fi
     setup_kitty_config
+    setup_kitty_autostart
 }
 
 main "$@"

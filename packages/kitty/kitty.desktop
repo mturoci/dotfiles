@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Kitty Terminal
+Exec=kitty
+Icon=kitty
+Categories=System;TerminalEmulator;
+StartupNotify=true
