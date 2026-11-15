@@ -64,6 +64,13 @@ install_essentials_ubuntu() {
         info "GitHub CLI already installed"
     fi
 
+    if ! command_exists ssh-keygen; then
+        info "Installing OpenSSH client via apt..."
+        sudo apt-get install -y openssh-client
+    else
+        info "OpenSSH client already installed"
+    fi
+
     if ! command_exists clang; then
         info "Installing clang via apt..."
         sudo apt-get install -y clang

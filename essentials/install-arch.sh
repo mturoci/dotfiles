@@ -32,6 +32,7 @@ install_essentials_arch() {
         gzip
         tar
         unzip
+        openssh
         github-cli
         clang
         zlib

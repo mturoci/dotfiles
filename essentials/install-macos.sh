@@ -59,6 +59,13 @@ install_essentials_macos() {
         info "GitHub CLI already installed"
     fi
 
+    if ! command_exists ssh-keygen; then
+        info "Installing OpenSSH via Homebrew..."
+        brew install openssh
+    else
+        info "OpenSSH already installed"
+    fi
+
     if ! brew list llvm &>/dev/null; then
         info "Installing LLVM via Homebrew..."
         brew install llvm
