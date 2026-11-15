@@ -8,19 +8,31 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_nvim_macos() {
-    info "Installing neovim for macOS..."
+    info "Installing neovim for macOS via asdf..."
 
-    if ! command_exists brew; then
-        error "Homebrew not found. Please install Homebrew first."
+    # Ensure asdf is available
+    if ! command_exists asdf; then
+        error "asdf not found. Please install asdf first."
         exit 1
     fi
 
-    if ! command_exists nvim; then
-        info "Installing neovim via Homebrew..."
-        brew install neovim
-    else
-        info "neovim already installed"
+    # Add neovim plugin if not already added
+    if ! asdf plugin list | grep -q neovim; then
+        info "Adding neovim plugin..."
+        asdf plugin add neovim
     fi
+
+    # Check if neovim is already installed
+    if command_exists nvim; then
+        info "neovim already installed"
+        return
+    fi
+
+    # Install neovim 0.11.4
+    info "Installing neovim 0.11.4 via asdf..."
+    asdf install neovim 0.11.4
+    asdf set --home neovim 0.11.4
+    info "neovim 0.11.4 installed and set as global"
 }
 
 install_delta_macos() {

@@ -8,57 +8,36 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_nvim() {
-    info "Installing neovim for Ubuntu..."
+    info "Installing neovim for Ubuntu via asdf..."
 
+    # Add ~/.local/bin to PATH if not already there (for current session)
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+
+    # Ensure asdf is available
+    if ! command_exists asdf; then
+        error "asdf not found. Please install asdf first."
+        exit 1
+    fi
+
+    # Add neovim plugin if not already added
+    if ! asdf plugin list | grep -q neovim; then
+        info "Adding neovim plugin..."
+        asdf plugin add neovim
+    fi
+
+    # Check if neovim is already installed
     if command_exists nvim; then
         info "neovim already installed"
         return
     fi
 
-    NVIM_VERSION="0.11.5"
-    ARCH=$(uname -m)
-
-    case "$ARCH" in
-        x86_64)
-            NVIM_ARCH="x86_64"
-            ;;
-        aarch64|arm64)
-            NVIM_ARCH="arm64"
-            ;;
-        *)
-            error "Unsupported architecture: $ARCH"
-            exit 1
-            ;;
-    esac
-
-    NVIM_TARBALL="nvim-linux-${NVIM_ARCH}.tar.gz"
-    NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/${NVIM_TARBALL}"
-    INSTALL_DIR="$HOME/.local/share"
-
-    info "Downloading neovim ${NVIM_VERSION} for ${NVIM_ARCH}..."
-    TMP_DIR=$(mktemp -d)
-    cd "$TMP_DIR"
-
-    if command_exists wget; then
-        wget -q "$NVIM_URL"
-    elif command_exists curl; then
-        curl -L -o "$NVIM_TARBALL" "$NVIM_URL"
-    else
-        error "Neither wget nor curl found. Please install one of them first."
-        exit 1
-    fi
-
-    info "Extracting neovim..."
-    mkdir -p "$INSTALL_DIR"
-    tar xzvf "$NVIM_TARBALL" -C "$INSTALL_DIR"
-
-    cd -
-    rm -rf "$TMP_DIR"
-
-    info "Creating symlink to /usr/local/bin..."
-    sudo ln -sf "$INSTALL_DIR/nvim-linux-${NVIM_ARCH}/bin/nvim" /usr/local/bin/nvim
-
-    info "neovim installation complete! Location: $INSTALL_DIR/nvim-linux-${NVIM_ARCH}"
+    # Install neovim 0.11.4
+    info "Installing neovim 0.11.4 via asdf..."
+    asdf install neovim 0.11.4
+    asdf set --home neovim 0.11.4
+    info "neovim 0.11.4 installed and set as global"
 }
 
 install_delta() {

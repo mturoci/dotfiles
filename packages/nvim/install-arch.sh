@@ -8,15 +8,36 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$DOTFILES_DIR/lib/utils.sh"
 
 install_nvim() {
-    info "Installing neovim for Arch Linux..."
+    info "Installing neovim for Arch Linux via asdf..."
 
+    # Add ~/.local/bin to PATH if not already there (for current session)
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+
+    # Ensure asdf is available
+    if ! command_exists asdf; then
+        error "asdf not found. Please install asdf first."
+        exit 1
+    fi
+
+    # Add neovim plugin if not already added
+    if ! asdf plugin list | grep -q neovim; then
+        info "Adding neovim plugin..."
+        asdf plugin add neovim
+    fi
+
+    # Check if neovim is already installed
     if command_exists nvim; then
         info "neovim already installed"
         return
     fi
 
-    info "Installing neovim via pacman..."
-    sudo pacman -Sy --needed --noconfirm neovim
+    # Install neovim 0.11.4
+    info "Installing neovim 0.11.4 via asdf..."
+    asdf install neovim 0.11.4
+    asdf set --home neovim 0.11.4
+    info "neovim 0.11.4 installed and set as global"
 }
 
 install_delta() {
