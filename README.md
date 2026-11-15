@@ -53,6 +53,19 @@ cd ~/dotfiles
 - zsh-syntax-highlighting
 - powerlevel10k
 
+### Arch Linux (via pacman)
+- X server (xorg-server, xorg-xinit, xorg-xrdb, xorg-xrandr, xorg-xdpyinfo, xclip, xsel)
+- i3 Window Manager (i3-wm, i3status, i3lock, dmenu)
+- Desktop utilities (brightnessctl, flameshot, pactl/libpulse, xdg-desktop-portal-gtk)
+- JetBrains Mono Nerd Font (ttf-jetbrains-mono-nerd)
+- AUR helper (yay)
+- tmux
+- kitty
+- neovim, git-delta, ripgrep
+- zsh, oh-my-zsh, zsh-autosuggestions, zsh-syntax-highlighting, powerlevel10k
+- asdf runtime manager
+- docker, docker-buildx, docker-compose
+
 ## Post-Installation
 
 1. **Restart your terminal** or run:
@@ -68,6 +81,13 @@ cd ~/dotfiles
 
 ## Configuration Files
 
+- `xserver/.xinitrc` - X11 initialization (environment, HiDPI, launches i3)
+- `xserver/.Xresources` - X11 resource settings (DPI scaling)
+- `xserver/00-keyboard.conf` - Xorg keyboard configuration (Caps Lock -> Escape)
+- `i3/config` - i3 window manager configuration
+- `i3/i3status.conf` - i3status bar configuration
+- `i3/flameshot.ini` - Flameshot screenshot tool configuration
+- `i3/portals.conf` - XDG Desktop Portal configuration
 - `tmux/.tmux.conf` - Tmux configuration
 - `tmux/right_status.sh` - Tmux status bar script
 - `kitty/kitty.conf` - Kitty terminal configuration
