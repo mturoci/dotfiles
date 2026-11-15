@@ -5,3 +5,4 @@ Exec=brave-browser
 Icon=brave-browser
 Categories=Network;WebBrowser;
 StartupNotify=true
+# Ubuntu/Debian version

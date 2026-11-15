@@ -31,7 +31,7 @@ install_brave_arch() {
 setup_brave_autostart() {
     info "Setting up Brave autostart..."
     mkdir -p "$HOME/.config/autostart"
-    create_symlink "$SCRIPT_DIR/brave.desktop" "$HOME/.config/autostart/brave.desktop"
+    create_symlink "$SCRIPT_DIR/brave-arch.desktop" "$HOME/.config/autostart/brave.desktop"
 }
 
 main() {
