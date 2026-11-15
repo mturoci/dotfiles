@@ -25,6 +25,7 @@ install_i3_arch() {
         xdg-desktop-portal
         xdg-desktop-portal-gtk
         xdg-utils
+        dex
     )
 
     for pkg in "${packages[@]}"; do
