@@ -83,3 +83,13 @@ setup_git_config() {
 
     info "Git configuration complete!"
 }
+
+setup_pi_agent() {
+    local script_dir=$1
+    info "Setting up Pi global prompt templates..."
+
+    PI_AGENT_DIR="${HOME}/.pi/agent"
+    mkdir -p "${PI_AGENT_DIR}/prompts"
+
+    create_symlink "${script_dir}/AGENTS.md" "${PI_AGENT_DIR}/AGENTS.md"
+}
