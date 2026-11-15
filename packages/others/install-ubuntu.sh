@@ -15,8 +15,18 @@ setup_configs() {
     info "Misc config setup complete!"
 }
 
+setup_sudoers() {
+    info "Setting up sudoers for passwordless poweroff and reboot..."
+    
+    if [ -f "$SCRIPT_DIR/sudoers-poweroff-reboot" ]; then
+        sudo install -m 440 "$SCRIPT_DIR/sudoers-poweroff-reboot" /etc/sudoers.d/poweroff-reboot
+        info "Sudoers configuration installed successfully!"
+    fi
+}
+
 main() {
     setup_configs
+    setup_sudoers
 }
 
 main "$@"

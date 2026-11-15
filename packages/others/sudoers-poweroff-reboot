@@ -1,0 +1,2 @@
+# Allow poweroff and reboot without password
+%sudo ALL=(ALL) NOPASSWD: /usr/sbin/poweroff, /sbin/poweroff, /usr/sbin/reboot, /sbin/reboot
